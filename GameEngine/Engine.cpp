@@ -225,9 +225,14 @@ void Core::Run()
 			}
 			else if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) 
 			{
+				if (event.key.code == sf::Keyboard::Key::Escape && event.type == sf::Event::KeyPressed) {
+					running = false;
+				}
+
 				Input::updateKeyState(event.key.code, event.type);
 			}
-			else if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) {
+			else if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) 
+			{
 				Input::updateButtonState(event.mouseButton.button, event.type);
 			}
 			else if (event.type == sf::Event::MouseMoved) {

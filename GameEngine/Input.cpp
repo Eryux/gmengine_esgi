@@ -127,3 +127,10 @@ void Input::refresh()
 	m_mouseAxis.wheel_delta[0] = 0.f;
 	m_mouseAxis.wheel_delta[1] = 0.f;
 }
+
+void Input::resetMousePosition(int x, int y) {
+	m_mouseAxis.delta[0] = 0.f;
+	m_mouseAxis.delta[1] = 0.f;
+	m_mouseAxis.axis[0] = x;
+	m_mouseAxis.axis[1] = y;
+}

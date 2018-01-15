@@ -15,13 +15,10 @@ int main()
 	dmn_engine->Run();
 
 	std::cout << "Stop engine ..." << std::endl;
+
 	dmn_engine->Free();
 	Engine::Core::Kill();
 
-	std::cout << "Engine stopped. Press Enter to quit." << std::endl;
-
-	std::string quit;
-	std::cin >> quit;
-
+	std::cout << "Engine stopped." << std::endl;
 	return 0;
 }

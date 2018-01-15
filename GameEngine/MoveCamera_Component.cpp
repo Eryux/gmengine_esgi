@@ -1,5 +1,7 @@
 #include "MoveCamera_Component.h"
 
+#include <SFML/Window.hpp>
+
 #include <iostream>
 
 using namespace Engine;
@@ -13,6 +15,9 @@ void MoveCamera_Component::start()
 	Input::bindKeyboard(sf::Keyboard::Key::Q);
 	Input::bindKeyboard(sf::Keyboard::Key::S);
 	Input::bindKeyboard(sf::Keyboard::Key::D);
+	Input::bindKeyboard(sf::Keyboard::Key::W);
+
+	m_core->GetWindowContext()->setMouseCursorVisible(false);
 }
 
 void MoveCamera_Component::SetCameraTransform(Transform * t) {
@@ -21,6 +26,26 @@ void MoveCamera_Component::SetCameraTransform(Transform * t) {
 
 void MoveCamera_Component::update() 
 {
+	float * mouseDelta = Input::mouseDelta();
+	m_yaw += mouseDelta[0] * m_sensivity * m_core->m_deltaTime;
+	m_pitch += mouseDelta[1] * m_sensivity * m_core->m_deltaTime;
+
+	if (m_pitch > 360.f) m_pitch -= 360.f;
+	else if (m_pitch < -360.f) m_pitch += 360.f;
+
+	if (m_pitch > 90.f && m_pitch < 270.f || (m_pitch < -90.f && m_pitch > -270.f))
+		m_yaw -= mouseDelta[0] * m_sensivity * m_core->m_deltaTime;
+	else
+		m_yaw += mouseDelta[0] * m_sensivity * m_core->m_deltaTime;
+
+	if (m_yaw > 360.f) m_yaw -= 360.f;
+	else if (m_yaw < -360.f) m_yaw += 360.f;
+
+	glm::quat p_quat = glm::quat(std::cos(m_pitch), std::sin(m_pitch), 0.f, 0.f);
+	glm::quat y_quat = glm::quat(std::cos(-m_yaw), 0.f, std::sin(-m_yaw), 0.f);
+	glm::quat rot = y_quat * p_quat;
+	m_cameraTransform->setLocalRotation(rot);
+
 	if (Input::keyPress(sf::Keyboard::Key::Z)) 
 	{
 		glm::vec3 pos = m_cameraTransform->getLocalPosition();
@@ -39,29 +64,29 @@ void MoveCamera_Component::update()
 	{
 		glm::vec3 pos = m_cameraTransform->getLocalPosition();
 		glm::vec3 right = m_cameraTransform->getRightVector();
-		glm::vec3 new_pos = pos + right * (-m_speed * 1.5f * m_core->m_deltaTime);
+		glm::vec3 new_pos = pos + right * (m_speed * 1.5f * m_core->m_deltaTime);
 		m_cameraTransform->setLocalPosition(new_pos);
 	}
 	if (Input::keyPress(sf::Keyboard::Key::D))
 	{
 		glm::vec3 pos = m_cameraTransform->getLocalPosition();
 		glm::vec3 right = m_cameraTransform->getRightVector();
-		glm::vec3 new_pos = pos + right * (m_speed * 1.5f * m_core->m_deltaTime);
+		glm::vec3 new_pos = pos + right * (-m_speed * 1.5f * m_core->m_deltaTime);
 		m_cameraTransform->setLocalPosition(new_pos);
 	}
 
-	float * mouseDelta = Input::mouseDelta();
-	m_pitch = mouseDelta[1] * m_sensivity * m_core->m_deltaTime;
-	m_yaw = mouseDelta[0] * m_sensivity * m_core->m_deltaTime;
+	// Lock cursor
+	if (Input::keyDown(sf::Keyboard::Key::W)) {
+		m_lock_cursor = !m_lock_cursor;
+		m_core->GetWindowContext()->setMouseCursorVisible(!m_lock_cursor);
+	}
 
-	//glm::quaternion rotation(glm::angleAxis(mVerticalAngle, glm::vec3(1.0f, 0.0f, 0.0f)));
-	//rotation = rotation * glm::angleAxis(mHorizontalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glm::quat rot = glm::angleAxis(m_pitch, glm::vec3(1.0f, 0.0f, 0.0f));
-	rot = rot * glm::angleAxis(m_yaw, glm::vec3(0.0f, 1.0f, 0.0f));
-	m_cameraTransform->setLocalRotation(rot * m_cameraTransform->getLocalRotation());
-	m_cameraTransform->setLocalRotation(glm::normalize(m_cameraTransform->getLocalRotation()));
-
+	if (m_lock_cursor) {
+		sf::Window * window = m_core->GetWindowContext();
+		sf::Vector2u window_size = window->getSize();
+		sf::Mouse::setPosition(sf::Vector2i(window_size.x / 2, window_size.y / 2), *window);
+		Input::resetMousePosition(window_size.x / 2, window_size.y / 2);
+	}
 }
 
 /*

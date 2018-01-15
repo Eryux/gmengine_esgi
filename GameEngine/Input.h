@@ -64,6 +64,7 @@ namespace Engine {
 		static void updateMouseWheelState(int x, int y);
 
 		static void refresh();
+		static void resetMousePosition(int x, int y);
 
 	};
 
