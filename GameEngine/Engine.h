@@ -8,7 +8,7 @@
 #pragma comment(lib, "glew32.lib")
 #endif
 
-#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/OpenGL.hpp>
 
 #include "Shader.h"
@@ -25,7 +25,9 @@ namespace Engine {
 		static Core * m_instance;
 
 		std::vector<Renderer*> m_renderers;
-		sf::Window * m_window;
+
+		sf::RenderWindow * m_window;
+
 		Shader m_shaders;
 
 		Core& operator=(const Core&) {};
@@ -42,6 +44,9 @@ namespace Engine {
 
 		Camera * m_camera;
 
+		float m_deltaTime = 0.f;
+		float m_Time = 0.f;
+
 		static Core * Get() {
 			if (!m_instance) m_instance = new Core();
 			return m_instance;
@@ -55,6 +60,10 @@ namespace Engine {
 		void AddRenderer(Renderer *r);
 
 		void RemoveRenderer(Renderer *r);
+
+		sf::RenderWindow * GetWindowContext() {
+			return m_window;
+		}
 
 		int CreateGLBuffer(GLfloat * vertices, GLuint * indexes, unsigned int size_v, unsigned int size_i);
 

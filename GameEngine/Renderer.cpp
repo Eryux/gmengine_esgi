@@ -220,10 +220,10 @@ void Renderer::draw()
 	// Default
 	auto LightAmbiantColor = glGetUniformLocation(program, "u_lightAmbientColor");
 	glUniform3f(LightAmbiantColor, 0.9f, 0.9f, 0.9f);
-	auto materialDiffuseColor = glGetUniformLocation(program, "u_materialDiffuseColor");
-	glUniform3f(materialDiffuseColor, 1.f, 1.f, 1.f);
 	auto LightDiffuseColor = glGetUniformLocation(program, "u_lightDiffuseColor");
 	glUniform3f(LightDiffuseColor, 1.f, 1.f, 1.f);
+	auto materialDiffuseColor = glGetUniformLocation(program, "u_materialDiffuseColor");
+	glUniform3f(materialDiffuseColor, 1.f, 1.f, 1.f);
 	auto materialAmbiantColor = glGetUniformLocation(program, "u_materialAmbientColor");
 	glUniform3f(materialAmbiantColor, 1.f, 1.f, 1.f);
 	auto materialTextured = glGetUniformLocation(program, "u_textured");
@@ -251,7 +251,7 @@ void Renderer::draw()
 
 	// Set light
 	auto lightDir_location = glGetUniformLocation(program, "u_PositionOrDirection");
-	float lightVector[4] = { 0.5, -90.0, 0.0, 0.0 };
+	float lightVector[4] = { 0.5, -10.0, 0.0, 0.0 };
 	glUniform4fv(lightDir_location, 1, lightVector);
 
 	// Set coords
@@ -282,6 +282,11 @@ void Renderer::draw()
 		glDrawElements(GL_TRIANGLES, m_model->indexes_size, GL_UNSIGNED_INT, nullptr);
 
 		glDisableVertexAttribArray(position_location);
-		glUseProgram(0);
+		glDisableVertexAttribArray(normal_location);
+		glDisableVertexAttribArray(texcoords_location);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
+
+	glUseProgram(0);
 }

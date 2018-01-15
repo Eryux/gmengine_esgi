@@ -2,8 +2,24 @@
 #include "Renderer.h"
 #include "Dummy.h"
 #include "Input.h"
+#include "MoveCamera_Component.h"
+
+#include "GUI_FPSCounter.h"
+
+#include <SFML/System/Time.hpp>
 
 #include <iostream>
+
+#include <stdio.h>
+#include <direct.h>
+#define GetCurrentDir _getcwd
+
+std::string GetCurrentWorkingDir(void) {
+	char buff[FILENAME_MAX];
+	GetCurrentDir(buff, FILENAME_MAX);
+	std::string current_working_dir(buff);
+	return current_working_dir;
+}
 
 using namespace Engine;
 
@@ -43,9 +59,12 @@ void Core::RemoveRenderer(Renderer *r)
 
 void Core::Init()
 {
+	std::cout << "Current working directory : " << GetCurrentWorkingDir() << std::endl;
+
 	// OpenGL Context -------------------
-	m_window = new sf::Window(sf::VideoMode(800, 600), "D4MN Engine", sf::Style::Default, sf::ContextSettings(32));
+	m_window = new sf::RenderWindow(sf::VideoMode(800, 600), "D4MN Engine", sf::Style::Default, sf::ContextSettings(32));
 	m_window->setVerticalSyncEnabled(true);
+	m_window->setFramerateLimit(60);
 
 	glewInit();
 
@@ -55,7 +74,7 @@ void Core::Init()
 	// Scene creations -------------------
 	GameObject * main_camera = new GameObject();
 	m_camera = new Camera();
-	m_camera->m_fov = 65.0f;
+	m_camera->m_fov = 70.0f;
 	m_camera->m_near_plane = 0.1f;
 	m_camera->m_far_plane = 10000.f;
 	m_camera->m_ratio = 800.0f / 600.0f;
@@ -93,8 +112,11 @@ void Core::Init()
 	m_gameObjects.push_back(simple_3D_object);
 
 	GameObject * test_object = new GameObject();
-	Dummy * test_object_component = new Dummy();
-	test_object->addComponent(test_object_component);
+	//Dummy * test_object_component = new Dummy();
+	//test_object->addComponent(test_object_component);
+	MoveCamera_Component * camera_move_cp = new MoveCamera_Component();
+	camera_move_cp->m_speed = 3.f;
+	test_object->addComponent(camera_move_cp);
 	m_gameObjects.push_back(test_object);
 
 	// Scene init -----------------------
@@ -168,10 +190,25 @@ int Core::CreateGLBuffer(GLfloat * vertices, GLuint * indexes, unsigned int size
 
 void Core::Run()
 {
+	sf::Clock timeClock;
+	timeClock.restart();
+
+	sf::Clock deltaTimeClock;
+
+	Engine_GUI::FPSCounter * gui_fpsCounter = new Engine_GUI::FPSCounter();
+	gui_fpsCounter->SetFont("..\\Ressources\\Fonts\\arial.ttf");
+	float last_FPSrefresh = 0.0f;
+
 	bool running = true;
 	while (running)
 	{
 		Input::refresh();
+
+		// Refresh FPS counter only every sec.
+		if (last_FPSrefresh + 1.f < m_Time) {
+			gui_fpsCounter->SetFPS(1.f / m_deltaTime);
+			last_FPSrefresh = m_Time;
+		}
 
 		// gestion des évènements
 		sf::Event event;
@@ -179,12 +216,10 @@ void Core::Run()
 		{
 			if (event.type == sf::Event::Closed)
 			{
-				// on stoppe le programme
 				running = false;
 			}
 			else if (event.type == sf::Event::Resized)
 			{
-				// on ajuste le viewport lorsque la fenêtre est redimensionnée
 				glViewport(0, 0, event.size.width, event.size.height);
 				m_camera->m_ratio = (float) event.size.width / (float) event.size.height;
 			}
@@ -194,6 +229,12 @@ void Core::Run()
 			}
 			else if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) {
 				Input::updateButtonState(event.mouseButton.button, event.type);
+			}
+			else if (event.type == sf::Event::MouseMoved) {
+				Input::updateMouseAxisState(event.mouseMove.x, event.mouseMove.y);
+			}
+			else if (event.type == sf::Event::MouseWheelMoved) {
+				Input::updateMouseWheelState(event.mouseWheel.x, event.mouseWheel.y);
 			}
 		}
 
@@ -208,18 +249,33 @@ void Core::Run()
 		}
 
 		// effacement les tampons de couleur/profondeur
+		m_window->clear();
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
-		// dessin...
+		// Draw 3D
 		int size_r = m_renderers.size();
 		for (int i = 0; i < size_r; i++) {
 			m_renderers[i]->draw();
 		}
 
+		glDisable(GL_DEPTH_TEST);
+
+		// Draw GUI
+		m_window->pushGLStates();
+		gui_fpsCounter->Draw(m_window);
+		m_window->popGLStates();
+
 		// termine la trame courante (en interne, échange les deux tampons de rendu)
 		m_window->display();
+
+		// Update time
+		m_deltaTime = deltaTimeClock.restart().asSeconds();
+		m_Time = timeClock.getElapsedTime().asSeconds();
 	}
+
+	delete gui_fpsCounter;
 }
 
 void Core::Free()

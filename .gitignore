@@ -12,9 +12,6 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-# Not ignoring files in package or vendors
-!vendors/
-
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -59,7 +56,6 @@ artifacts/
 *_i.h
 *.ilk
 *.meta
-*.obj
 *.pch
 *.pdb
 *.pgc
@@ -306,3 +302,6 @@ __pycache__/
 
 # OpenCover UI analysis results
 OpenCover/
+
+# Not ignoring files in package or vendors
+!vendors/

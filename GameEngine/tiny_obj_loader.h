@@ -46,6 +46,7 @@ THE SOFTWARE.
 #include <map>
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace tinyobj {
 
@@ -1406,6 +1407,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
   std::ifstream ifs(filename);
   if (!ifs) {
     errss << "Cannot open file [" << filename << "]" << std::endl;
+	std::cerr << "Error: " << strerror(errno) << std::endl;
     if (err) {
       (*err) = errss.str();
     }

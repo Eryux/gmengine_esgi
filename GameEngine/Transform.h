@@ -57,6 +57,10 @@ namespace Engine {
 		// Others
 		glm::vec3 getForwardVector();
 
+		glm::vec3 getRightVector();
+
+		glm::vec3 getUpVector();
+
 		glm::mat4 getWorlMatrix();
 
 	};

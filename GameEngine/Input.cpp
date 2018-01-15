@@ -94,6 +94,22 @@ void Input::updateButtonState(sf::Mouse::Button b, sf::Event::EventType t) {
 	}
 }
 
+void Input::updateMouseAxisState(int x, int y) {
+	mouseAxisState_t * state = &Input::m_mouseAxis;
+	state->delta[0] = x - state->axis[0];
+	state->delta[1] = y - state->axis[1];
+	state->axis[0] = x;
+	state->axis[1] = y;
+}
+
+void Input::updateMouseWheelState(int x, int y) {
+	mouseAxisState_t * state = &Input::m_mouseAxis;
+	state->wheel_delta[0] = x - state->wheel[0];
+	state->wheel_delta[1] = y - state->wheel[1];
+	state->wheel[0] = x;
+	state->wheel[1] = y;
+}
+
 void Input::refresh() 
 {
 	for (auto it = Input::m_bind_keys.begin(); it != Input::m_bind_keys.end(); ++it) {
@@ -105,4 +121,9 @@ void Input::refresh()
 		it->second.down = false;
 		it->second.up = false;
 	}
+
+	m_mouseAxis.delta[0] = 0.f;
+	m_mouseAxis.delta[1] = 0.f;
+	m_mouseAxis.wheel_delta[0] = 0.f;
+	m_mouseAxis.wheel_delta[1] = 0.f;
 }

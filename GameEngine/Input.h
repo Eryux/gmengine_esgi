@@ -60,6 +60,8 @@ namespace Engine {
 
 		static void updateKeyState(sf::Keyboard::Key k, sf::Event::EventType t);
 		static void updateButtonState(sf::Mouse::Button b, sf::Event::EventType t);
+		static void updateMouseAxisState(int x, int y);
+		static void updateMouseWheelState(int x, int y);
 
 		static void refresh();
 

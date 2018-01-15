@@ -91,9 +91,17 @@ glm::vec3 Transform::getForwardVector() {
 	return m_localRotation * glm::vec3(0.f, 0.f, 1.f);
 }
 
+glm::vec3 Transform::getRightVector() {
+	return m_localRotation * glm::vec3(1.f, 0.f, 0.f);
+}
+
+glm::vec3 Transform::getUpVector() {
+	return m_localRotation * glm::vec3(0.f, 1.f, 0.f);
+}
+
 glm::mat4 Transform::getWorlMatrix() {
 	glm::mat4 t_mat = glm::translate(glm::mat4(), m_localPosition);
 	glm::mat4 s_mat = glm::scale(m_localSize);
-	glm::mat4 r_mat = glm::toMat4(m_localRotation);
+	glm::mat4 r_mat = glm::mat4_cast(m_localRotation);
 	return t_mat * r_mat * s_mat;
 }

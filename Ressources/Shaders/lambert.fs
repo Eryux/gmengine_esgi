@@ -19,7 +19,7 @@ uniform vec3 u_materialAmbientColor;
 uniform vec3 u_lightDiffuseColor;
 uniform vec3 u_materialDiffuseColor;
 
-uniform float u_textured;
+uniform float u_textured = -1.0;
 
 struct Lights
 {

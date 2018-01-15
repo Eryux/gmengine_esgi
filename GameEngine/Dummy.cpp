@@ -32,4 +32,14 @@ void Dummy::update()
 	if (Input::mousePress(sf::Mouse::Button::Left)) {
 		std::cout << "Click pressed !" << std::endl;
 	}
+
+	/*int * mouseAxis = Input::mouseAxis();
+	float * mouseDelta = Input::mouseDelta();
+	int * mouseWheel = Input::mouseWheelAxis();
+	float * mouseWheelDelta = Input::mouseWheelDelta();
+
+	std::cout << "Mouse position : " << "x " << mouseAxis[0] << " y " << mouseAxis[1] << std::endl;
+	std::cout << "Mouse delta : " << "x " << mouseDelta[0] << " y " << mouseDelta[1] << std::endl;
+	std::cout << "Mouse wheel position : " << "x " << mouseWheel[0] << " y " << mouseWheel[1] << std::endl;
+	std::cout << "Mouse wheel delta : " << "x " << mouseWheelDelta[0] << "y " << mouseWheelDelta[1] << std::endl;*/
 }
