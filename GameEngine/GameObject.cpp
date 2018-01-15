@@ -7,39 +7,14 @@ GameObject::GameObject()
 	m_transform = new Transform();
 }
 
-template<typename T>
-T* GameObject::getComponent() {
-	for (int i = 0; i < m_components.size(); i++) {
-		if (dynamic_cast<T>(m_components[i]) != nullptr) {
-			return &(dynamic_cast<T>(m_components[i]));
-		}
-	}
-
-	return nullptr;
-}
-
-template<typename T>
-std::vector<T*> GameObject::getComponents()
-{
-	std::vector<T*> results;
-
-	for (int i = 0; i < m_components.size(); i++) {
-		if (dynamic_cast<T>(m_components[i]) != nullptr) {
-			results.push_back(&(m_components[i]));
-		}
-	}
-
-	return results;
-}
-
-std::vector<Component> GameObject::getComponents()
+std::vector<Component*> GameObject::getComponents()
 {
 	return m_components;
 }
 
-void GameObject::addComponent(Component component)
+void GameObject::addComponent(Component * component)
 {
-	component.setGameObject(this);
+	component->setGameObject(this);
 
 	if (m_components.capacity() < m_components.size() + 8) {
 		m_components.reserve(m_components.capacity() + 16);
@@ -51,7 +26,7 @@ void GameObject::addComponent(Component component)
 void GameObject::removeComponent(Component* component)
 {
 	for (int i = 0; i < m_components.size(); i++) {
-		if (&(m_components[i]) == component) {
+		if (m_components[i] == component) {
 			m_components.erase(m_components.begin() + i);
 			break;
 		}
@@ -80,7 +55,7 @@ void GameObject::setActive(bool active)
 	}
 
 	for (int i = 0; i < m_components.size(); i++) {
-		m_components[i].setActive(active);
+		m_components[i]->setActive(active);
 	}
 
 	m_state = (active) ? GameObjectState::ENABLE : GameObjectState::DISABLE;
@@ -99,7 +74,8 @@ Transform* GameObject::getTransform()
 void GameObject::destroy()
 {
 	for (int i = 0; i < m_components.size(); i++) {
-		m_components[i].remove();
+		m_components[i]->remove();
+		delete m_components[i];
 	}
 
 	m_state = GameObjectState::PENDING_DESTROY;

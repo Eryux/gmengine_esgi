@@ -1,44 +1,27 @@
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
+#include <iostream>
+
+#include "Engine.h"
+
+Engine::Core * Engine::Core::m_instance = nullptr;
 
 int main()
 {
-	// crée la fenêtre
-	sf::Window window(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default, sf::ContextSettings(32));
-	window.setVerticalSyncEnabled(true);
+	std::cout << "Load core function ..." << std::endl;
+	Engine::Core * dmn_engine = Engine::Core::Get();
 
-	// chargement des ressources, initialisation des états OpenGL, ...
+	dmn_engine->Init();
 
-	// la boucle principale
-	bool running = true;
-	while (running)
-	{
-		// gestion des évènements
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				// on stoppe le programme
-				running = false;
-			}
-			else if (event.type == sf::Event::Resized)
-			{
-				// on ajuste le viewport lorsque la fenêtre est redimensionnée
-				glViewport(0, 0, event.size.width, event.size.height);
-			}
-		}
+	std::cout << "Start engine ..." << std::endl;
+	dmn_engine->Run();
 
-		// effacement les tampons de couleur/profondeur
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	std::cout << "Stop engine ..." << std::endl;
+	dmn_engine->Free();
+	Engine::Core::Kill();
 
-		// dessin...
+	std::cout << "Engine stopped. Press Enter to quit." << std::endl;
 
-		// termine la trame courante (en interne, échange les deux tampons de rendu)
-		window.display();
-	}
-
-	// libération des ressources...
+	std::string quit;
+	std::cin >> quit;
 
 	return 0;
 }

@@ -88,5 +88,12 @@ glm::vec3 Transform::getWorldSize() {
 
 // Others
 glm::vec3 Transform::getForwardVector() {
-	return getWorldRotation() * glm::vec3(0.f, 1.f, 0.f);
+	return m_localRotation * glm::vec3(0.f, 0.f, 1.f);
+}
+
+glm::mat4 Transform::getWorlMatrix() {
+	glm::mat4 t_mat = glm::translate(glm::mat4(), m_localPosition);
+	glm::mat4 s_mat = glm::scale(m_localSize);
+	glm::mat4 r_mat = glm::toMat4(m_localRotation);
+	return t_mat * r_mat * s_mat;
 }

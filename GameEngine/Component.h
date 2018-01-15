@@ -11,7 +11,7 @@ namespace Engine {
 
 	class Component {
 
-	private:
+	protected:
 		GameObject* m_gameObject;
 
 		ComponentState m_state;
@@ -42,9 +42,6 @@ namespace Engine {
 
 		// Call when component is disabled (in current frame)
 		virtual void onDisable() {}
-
-		// Call after update, every frame of gameloop
-		virtual void draw() {}
 
 		// Call it for removing component
 		virtual void remove() {}

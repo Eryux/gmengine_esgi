@@ -57,6 +57,8 @@ namespace Engine {
 		// Others
 		glm::vec3 getForwardVector();
 
+		glm::mat4 getWorlMatrix();
+
 	};
 
 }

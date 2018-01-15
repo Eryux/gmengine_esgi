@@ -4,7 +4,7 @@ using namespace Engine;
 
 Component::Component() 
 {
-
+	m_state = ComponentState::INIT;
 }
 
 Component::~Component() 

@@ -16,7 +16,7 @@ namespace Engine {
 	class GameObject {
 		
 	private:
-		std::vector<Component> m_components;
+		std::vector<Component*> m_components;
 
 		std::string m_objectName;
 
@@ -30,16 +30,35 @@ namespace Engine {
 		GameObject();
 
 		template<typename T>
-		T* getComponent(); 
+		T* getComponent() {
+			for (int i = 0; i < m_components.size(); i++) {
+				if (dynamic_cast<T*>(m_components[i]) != nullptr) {
+					return dynamic_cast<T*>(m_components[i]);
+				}
+			}
+
+			return nullptr;
+		}
 
 		template<typename T>
-		std::vector<T*> getComponents();
+		std::vector<T*> getComponents()
+		{
+			std::vector<T*> results;
 
-		std::vector<Component> getComponents();
+			for (int i = 0; i < m_components.size(); i++) {
+				if (dynamic_cast<T*>(m_components[i]) != nullptr) {
+					results.push_back(m_components[i]);
+				}
+			}
 
-		void addComponent(Component component);
+			return results;
+		}
 
-		void removeComponent(Component* component);
+		std::vector<Component*> getComponents();
+
+		void addComponent(Component * component);
+
+		void removeComponent(Component * component);
 
 		void removeComponent(int index);
 
