@@ -204,6 +204,10 @@ model_t * Renderer::GetModel() {
 	return nullptr;
 }
 
+void Renderer::SetTexture(int i) {
+	m_texture_id = i;
+}
+
 void Renderer::draw() 
 {
 	if (m_core == nullptr) return;
@@ -234,6 +238,19 @@ void Renderer::draw()
 	{
 		tinyobj::material_t * mat = &(m_model->materials[m_material_id]);
 
+		// Texture
+		if (m_texture_id != -1)
+		{
+			uint32_t texUnit = 0;
+			glActiveTexture(GL_TEXTURE0 + texUnit);
+			glBindTexture(GL_TEXTURE_2D, m_core->m_textures[m_texture_id]);
+
+			auto textureLocation = glGetUniformLocation(program, "u_Texture");
+			glUniform1i(textureLocation, texUnit);
+			glUniform1f(materialTextured, 1.f);
+		}
+
+		// Params
 		glUniform3fv(materialDiffuseColor, 1, mat->diffuse);
 		glUniform3fv(materialAmbiantColor, 1, mat->ambient);
 	}
@@ -286,6 +303,10 @@ void Renderer::draw()
 		glDisableVertexAttribArray(texcoords_location);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		if (m_material_id != -1 && m_texture_id != -1) {
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 	}
 
 	glUseProgram(0);

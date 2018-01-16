@@ -119,5 +119,8 @@
     <ClInclude Include="MoveCamera_Component.h">
       <Filter>Header Files\GameComponents</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

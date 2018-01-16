@@ -47,6 +47,8 @@ namespace Engine {
 
 		int m_material_id = -1;
 
+		int m_texture_id = -1;
+
 		std::string m_model_name;
 
 		std::string m_material_path;
@@ -75,6 +77,8 @@ namespace Engine {
 
 		void SetMaterial(int i);
 		tinyobj::material_t * GetMaterial(int i);
+
+		void SetTexture(int i);
 
 		model_t * GetModel();
 

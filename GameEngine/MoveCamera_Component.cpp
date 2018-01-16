@@ -88,23 +88,3 @@ void MoveCamera_Component::update()
 		Input::resetMousePosition(window_size.x / 2, window_size.y / 2);
 	}
 }
-
-/*
-void CameraFPSQuaternion::UpdateView()
-{
-	//temporary frame quaternion from pitch,yaw,roll 
-	//here roll is not used
-	glm::quat key_quat = glm::quat(glm::vec3(key_pitch, key_yaw, key_roll));
-	//reset values
-	key_pitch = key_yaw = key_roll = 0;
-
-	//order matters,update camera_quat
-	camera_quat = key_quat * camera_quat;
-	camera_quat = glm::normalize(camera_quat);
-	glm::mat4 rotate = glm::mat4_cast(camera_quat);
-
-	glm::mat4 translate = glm::mat4(1.0f);
-	translate = glm::translate(translate, -eyeVector);
-
-	viewMatrix = rotate * translate;
-}*/

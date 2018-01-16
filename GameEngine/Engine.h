@@ -36,9 +36,12 @@ namespace Engine {
 		Core() {};
 		~Core() {};
 
+		void InitScene();
+
 	public:
 		std::vector<GLuint> m_vbo;
 		std::vector<GLuint> m_ibo;
+		std::vector<GLuint> m_textures;
 
 		std::vector<GameObject*> m_gameObjects;
 
