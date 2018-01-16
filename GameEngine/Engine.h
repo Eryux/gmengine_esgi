@@ -19,6 +19,8 @@ namespace Engine {
 
 	class Renderer;
 
+	class Skybox;
+
 	class Core {
 
 	private:
@@ -46,6 +48,8 @@ namespace Engine {
 		std::vector<GameObject*> m_gameObjects;
 
 		Camera * m_camera;
+
+		Skybox * m_skybox;
 
 		float m_deltaTime = 0.f;
 		float m_Time = 0.f;

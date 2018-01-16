@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "MoveCamera_Component.h"
 #include "Texture.h"
+#include "Skybox.h"
 
 #include "GUI_FPSCounter.h"
 
@@ -131,6 +132,12 @@ void Core::Init()
 
 	// Load Shaders ----------------------
 	g_LAMBER_SHADER = m_shaders.LoadShader("..\\Ressources\\Shaders\\lambert.vs", "..\\Ressources\\Shaders\\lambert.fs");
+	int skybox_shader = m_shaders.LoadShader("..\\Ressources\\Shaders\\skybox.vs", "..\\Ressources\\Shaders\\skybox.fs");
+
+	// Create skybox
+	m_skybox = new Skybox();
+	m_skybox->loadTexture("..\\Ressources\\Textures\\skybox");
+	m_skybox->setShader(m_shaders.GetProgram(skybox_shader));
 
 	// Scene creations -------------------
 	InitScene();
@@ -184,6 +191,8 @@ void Core::Run()
 	glEnable(GL_POLYGON_SMOOTH);
 	glEnable(GL_TEXTURE_2D);
 
+	bool wireframe = false;
+
 	bool running = true;
 	while (running)
 	{
@@ -212,6 +221,15 @@ void Core::Run()
 			{
 				if (event.key.code == sf::Keyboard::Key::Escape && event.type == sf::Event::KeyPressed) {
 					running = false;
+				}
+				if (event.key.code == sf::Keyboard::Key::F11 && event.type == sf::Event::KeyPressed) {
+					if (wireframe) {
+						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					}
+					else {
+						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					}
+					wireframe = !wireframe;
 				}
 
 				Input::updateKeyState(event.key.code, event.type);
@@ -242,6 +260,9 @@ void Core::Run()
 		m_window->clear();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Draw skybox
+		m_skybox->draw();
 
 		// Draw 3D
 		int size_r = m_renderers.size();

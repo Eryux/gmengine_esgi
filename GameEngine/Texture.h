@@ -13,9 +13,9 @@ namespace Engine {
 	public:
 		
 		static int LoadTexture(std::string file) {
-			sf::Image * text = new sf::Image();
+			sf::Image text = sf::Image();
 
-			if (!text->loadFromFile(file)) {
+			if (!text.loadFromFile(file)) {
 				return -1;
 			}
 
@@ -26,13 +26,12 @@ namespace Engine {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, text->getSize().x, text->getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, text->getPixelsPtr());
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, text.getSize().x, text.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, text.getPixelsPtr());
 			glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			Core * core = Core::Get();
 			core->m_textures.push_back(buffer_index);
-			delete text;
 			return core->m_textures.size() - 1;
 		}
 

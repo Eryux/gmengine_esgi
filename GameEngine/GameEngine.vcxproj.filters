@@ -75,6 +75,9 @@
     <ClCompile Include="MoveCamera_Component.cpp">
       <Filter>Source Files\GameComponents</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -120,6 +123,9 @@
       <Filter>Header Files\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
