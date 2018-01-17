@@ -37,6 +37,9 @@
     <Filter Include="Source Files\GameComponents">
       <UniqueIdentifier>{3ed3460f-3e18-49ee-94d8-fc3509187cd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Vendors">
+      <UniqueIdentifier>{f681155c-b7e5-4c56-8863-10ebf77f8524}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -101,9 +104,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="tiny_obj_loader.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -127,6 +127,12 @@
     </ClInclude>
     <ClInclude Include="Skybox.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="tiny_obj_loader.h">
+      <Filter>Header Files\Vendors</Filter>
+    </ClInclude>
+    <ClInclude Include="json.h">
+      <Filter>Header Files\Vendors</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
