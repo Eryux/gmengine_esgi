@@ -20,14 +20,14 @@ namespace Engine {
 
 		std::string m_objectName;
 
-		GameObjectState m_state;
+		GameObjectState m_state = ENABLE;
 
 		GameObject* m_parentObject;
 
 		Transform* m_transform;
 
 	public:
-		GameObject();
+		GameObject(std::string name);
 
 		template<typename T>
 		T* getComponent() {

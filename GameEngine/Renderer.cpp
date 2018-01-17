@@ -91,8 +91,6 @@ void Renderer::FreeModel(std::string model_path) {
 
 	if (model != nullptr) {
 		delete model->data;
-		delete model->vertices;
-		delete model->indexes;
 		delete model;
 	}
 
@@ -110,8 +108,6 @@ void Renderer::FreeModelAll() {
 
 		if (model != nullptr) {
 			delete model->data;
-			delete model->vertices;
-			delete model->indexes;
 			delete model;
 		}
 	}

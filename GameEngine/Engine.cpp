@@ -63,7 +63,7 @@ void Core::InitScene()
 {
 	// Camera ---------------------------------
 	
-	GameObject * main_camera = new GameObject();
+	GameObject * main_camera = new GameObject("camera");
 	m_gameObjects.push_back(main_camera);
 
 	m_camera = new Camera();
@@ -82,7 +82,7 @@ void Core::InitScene()
 	// 3D Object ---------------------------
 
 	// Dragon
-	GameObject * dragon_obj = new GameObject();
+	GameObject * dragon_obj = new GameObject("dragon");
 	m_gameObjects.push_back(dragon_obj);
 
 	Renderer * dragon_renderer = new Renderer("..\\Ressources\\Models\\alduin\\alduin-dragon.obj", "..\\Ressources\\Models\\alduin\\");
@@ -97,7 +97,7 @@ void Core::InitScene()
 	dragon_renderer->SetTexture(dragon_texture);
 
 	// Floor
-	GameObject * floor_obj = new GameObject();
+	GameObject * floor_obj = new GameObject("floor");
 	m_gameObjects.push_back(floor_obj);
 
 	Renderer * floor_renderer = new Renderer("..\\Ressources\\Models\\pcube.obj", "..\\Ressources\\Models\\");
@@ -108,7 +108,7 @@ void Core::InitScene()
 	floor_obj->getTransform()->setLocalSize(glm::vec3(100.0f, 0.1f, 100.0f));
 
 	// Table
-	GameObject * table_obj = new GameObject();
+	GameObject * table_obj = new GameObject("table");
 	m_gameObjects.push_back(table_obj);
 
 	Renderer * table_renderer = new Renderer("..\\Ressources\\Models\\pcube.obj", "..\\Ressources\\Models\\");
@@ -141,15 +141,6 @@ void Core::Init()
 
 	// Scene creations -------------------
 	InitScene();
-
-	// Scene init -----------------------
-	for (int i = 0; i < m_gameObjects.size(); i++) {
-		std::vector<Component*> components = m_gameObjects[i]->getComponents();
-		for (int j = 0; j < components.size(); j++) {
-			components[j]->start();
-		}
-		m_gameObjects[i]->setActive(true);
-	}
 }
 
 int Core::CreateGLBuffer(GLfloat * vertices, GLuint * indexes, unsigned int size_v, unsigned int size_i)
@@ -196,6 +187,27 @@ void Core::Run()
 	bool running = true;
 	while (running)
 	{
+		// Create / Delete pending object -----------------------
+		for (int i = 0; i < m_gameObjects.size(); i++) {
+			if (m_gameObjects[i]->getState() == GameObjectState::ENABLE) 
+			{
+				std::vector<Component*> components = m_gameObjects[i]->getComponents();
+				for (int j = 0; j < components.size(); j++) {
+					Component * c = components[j];
+					if (c->getState() == ComponentState::INIT) {
+						c->start();
+						c->setActive(true);
+					}
+					else if (c->getState() == ComponentState::PENDING_REMOVE) {
+						m_gameObjects[i]->removeComponent(j);
+					}
+				}
+			}
+			else if (m_gameObjects[i]->getState() == GameObjectState::PENDING_DESTROY) {
+				m_gameObjects[i]->destroy();
+			}
+		}
+
 		Input::refresh();
 
 		// Refresh FPS counter only every sec.
@@ -249,10 +261,15 @@ void Core::Run()
 		// Update
 		int size_objects = m_gameObjects.size();
 		for (int i = 0; i < size_objects; i++) {
-			std::vector<Component*> components = m_gameObjects[i]->getComponents();
-			int size_components = components.size();
-			for (int j = 0; j < size_components; j++) {
-				components[j]->update();
+			if (m_gameObjects[i]->getState() == GameObjectState::ENABLE)
+			{
+				std::vector<Component*> components = m_gameObjects[i]->getComponents();
+				int size_components = components.size();
+				for (int j = 0; j < size_components; j++) {
+					if (components[j]->getState() == ComponentState::ENABLED) {
+						components[j]->update();
+					}
+				}
 			}
 		}
 
@@ -267,7 +284,8 @@ void Core::Run()
 		// Draw 3D
 		int size_r = m_renderers.size();
 		for (int i = 0; i < size_r; i++) {
-			m_renderers[i]->draw();
+			if (m_renderers[i]->getState() == ComponentState::ENABLED)
+				m_renderers[i]->draw();
 		}
 
 		// Draw GUI
@@ -299,12 +317,16 @@ void Core::Free()
 		glDeleteBuffers(1, &m_ibo[i]);
 	}
 
+	delete m_skybox;
+
 	m_shaders.Free();
 
 	for (int i = 0; i < m_gameObjects.size(); i++) {
 		m_gameObjects[i]->destroy();
 		delete m_gameObjects[i];
 	}
+
+	Renderer::FreeModelAll();
 
 	delete m_window;
 }

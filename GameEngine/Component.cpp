@@ -19,6 +19,11 @@ void Component::setActive(bool status)
 	}
 
 	m_state = (status) ? ComponentState::ENABLED : ComponentState::DISABLED;
+
+	if (ComponentState::ENABLED)
+		onEnable();
+	else if (ComponentState::DISABLED)
+		onDisable();
 }
 
 ComponentState Component::getState()

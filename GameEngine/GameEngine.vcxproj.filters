@@ -98,9 +98,6 @@
     <ClInclude Include="Transform.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="SpriteRender.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -112,9 +109,6 @@
     </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Dummy.h">
-      <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="GUI_FPSCounter.h">
       <Filter>Header Files\GUI</Filter>
@@ -133,6 +127,12 @@
     </ClInclude>
     <ClInclude Include="json.h">
       <Filter>Header Files\Vendors</Filter>
+    </ClInclude>
+    <ClInclude Include="Dummy.h">
+      <Filter>Header Files\GameComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneLoader.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

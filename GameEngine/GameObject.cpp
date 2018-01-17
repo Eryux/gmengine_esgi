@@ -2,8 +2,9 @@
 
 using namespace Engine;
 
-GameObject::GameObject()
+GameObject::GameObject(std::string name)
 {
+	m_objectName = name;
 	m_transform = new Transform();
 }
 
@@ -27,6 +28,8 @@ void GameObject::removeComponent(Component* component)
 {
 	for (int i = 0; i < m_components.size(); i++) {
 		if (m_components[i] == component) {
+			m_components[i]->remove();
+			delete m_components[i];
 			m_components.erase(m_components.begin() + i);
 			break;
 		}
@@ -35,6 +38,8 @@ void GameObject::removeComponent(Component* component)
 
 void GameObject::removeComponent(int index)
 {
+	m_components[index]->remove();
+	delete m_components[index];
 	m_components.erase(m_components.begin() + index);
 }
 

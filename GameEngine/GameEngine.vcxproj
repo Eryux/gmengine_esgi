@@ -157,9 +157,9 @@
     <ClInclude Include="json.h" />
     <ClInclude Include="MoveCamera_Component.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="SceneLoader.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
-    <ClInclude Include="SpriteRender.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="Transform.h" />

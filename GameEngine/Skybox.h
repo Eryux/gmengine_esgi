@@ -35,6 +35,8 @@ namespace Engine {
 
 		void draw();
 
+		~Skybox();
+
 	};
 
 }

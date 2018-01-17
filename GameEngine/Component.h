@@ -14,7 +14,10 @@ namespace Engine {
 	protected:
 		GameObject* m_gameObject;
 
-		ComponentState m_state;
+		ComponentState m_state = ComponentState::INIT;
+
+		// Bind parameter for serialization
+		virtual void bindParams() {};
 
 	public:
 		// Call when object is instanciated

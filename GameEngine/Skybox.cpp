@@ -132,3 +132,8 @@ void Skybox::draw()
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	glUseProgram(0);
 }
+
+Skybox::~Skybox() 
+{
+	glDeleteBuffers(1, &m_vbo);
+}
