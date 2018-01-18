@@ -3,6 +3,8 @@
 #ifndef ENGINE_COMPONENT_H
 #define ENGINE_COMPONENT_H
 
+#include <SFML/Graphics/RenderWindow.hpp>
+
 namespace Engine {
 
 	class GameObject;
@@ -48,6 +50,8 @@ namespace Engine {
 
 		// Call it for removing component
 		virtual void remove() {}
+
+		virtual void gui_draw(sf::RenderWindow * w) {}
 	};
 
 };

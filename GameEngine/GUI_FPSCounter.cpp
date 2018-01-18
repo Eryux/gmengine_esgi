@@ -2,8 +2,9 @@
 
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
-using namespace Engine_GUI;
+using namespace Engine;
 
 FPSCounter::FPSCounter() {
 	bool r_load = m_font.loadFromFile(m_font_file);
@@ -31,6 +32,19 @@ void FPSCounter::SetFont(std::string font_path) {
 	}
 }
 
-void FPSCounter::Draw(sf::RenderWindow * window) {
+void FPSCounter::gui_draw(sf::RenderWindow * window) {
 	window->draw(m_text);
+}
+
+void FPSCounter::start() {
+	Component::start();
+	m_last_refresh = 0.0f;
+	m_core = Core::Get();
+}
+
+void FPSCounter::update() {
+	if (m_last_refresh + 1.f < m_core->m_Time) {
+		SetFPS(1.f / m_core->m_deltaTime);
+		m_last_refresh = m_core->m_Time;
+	}
 }

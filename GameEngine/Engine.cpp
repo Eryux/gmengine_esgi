@@ -117,6 +117,13 @@ void Core::InitScene()
 	table_obj->addComponent(table_renderer);
 	table_obj->getTransform()->setLocalPosition(glm::vec3(0.0f, 1.2f, 0.0f));
 	table_obj->getTransform()->setLocalSize(glm::vec3(1.0f, 1.2f, 1.0f));
+
+	// FPS Counter
+	GameObject * fpsc_obj = new GameObject("fpscounter");
+	FPSCounter * fpsc_component = new FPSCounter();
+	fpsc_component->SetFont("..\\Ressources\\Fonts\\arial.ttf");
+	fpsc_obj->addComponent(fpsc_component);
+	m_gameObjects.push_back(fpsc_obj);
 }
 
 void Core::Init()
@@ -170,10 +177,7 @@ void Core::Run()
 	timeClock.restart();
 
 	sf::Clock deltaTimeClock;
-
-	Engine_GUI::FPSCounter * gui_fpsCounter = new Engine_GUI::FPSCounter();
-	gui_fpsCounter->SetFont("..\\Ressources\\Fonts\\arial.ttf");
-	float last_FPSrefresh = 0.0f;
+	deltaTimeClock.restart();
 
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
@@ -209,12 +213,6 @@ void Core::Run()
 		}
 
 		Input::refresh();
-
-		// Refresh FPS counter only every sec.
-		if (last_FPSrefresh + 1.f < m_Time) {
-			gui_fpsCounter->SetFPS(1.f / m_deltaTime);
-			last_FPSrefresh = m_Time;
-		}
 
 		// gestion des évènements
 		sf::Event event;
@@ -290,7 +288,18 @@ void Core::Run()
 
 		// Draw GUI
 		m_window->pushGLStates();
-		gui_fpsCounter->Draw(m_window);
+		size_objects = m_gameObjects.size();
+		for (int i = 0; i < size_objects; i++) {
+			if (m_gameObjects[i]->getState() == GameObjectState::ENABLE) {
+				std::vector<Component*> components = m_gameObjects[i]->getComponents();
+				int size_components = components.size();
+				for (int j = 0; j < size_components; j++) {
+					if (components[j]->getState() == ComponentState::ENABLED) {
+						components[j]->gui_draw(m_window);
+					}
+				}
+			}
+		}
 		m_window->popGLStates();
 
 		// termine la trame courante (en interne, échange les deux tampons de rendu)
@@ -306,8 +315,6 @@ void Core::Run()
 	glDisable(GL_BLEND);
 	glDisable(GL_POLYGON_SMOOTH);
 	glDisable(GL_TEXTURE_2D);
-
-	delete gui_fpsCounter;
 }
 
 void Core::Free()
