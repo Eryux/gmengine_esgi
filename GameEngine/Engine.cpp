@@ -5,6 +5,7 @@
 #include "MoveCamera_Component.h"
 #include "Texture.h"
 #include "Skybox.h"
+#include "SceneLoader.h"
 
 #include "GUI_FPSCounter.h"
 
@@ -61,9 +62,12 @@ void Core::RemoveRenderer(Renderer *r)
 
 void Core::InitScene()
 {
+	SceneLoader::Init();
+	SceneLoader::LoadScene("..\\Ressources\\Scenes\\demo.json");
+
 	// Camera ---------------------------------
 	
-	GameObject * main_camera = new GameObject("camera");
+	/*GameObject * main_camera = new GameObject("camera");
 	m_gameObjects.push_back(main_camera);
 
 	m_camera = new Camera();
@@ -77,7 +81,7 @@ void Core::InitScene()
 	camera_move_cp->m_speed = 3.f;
 	main_camera->addComponent(camera_move_cp);
 
-	main_camera->getTransform()->setLocalPosition(glm::vec3(0.0f, 5.0f, -5.0f));
+	main_camera->getTransform()->setLocalPosition(glm::vec3(0.0f, 5.0f, -5.0f));*/
 
 	// 3D Object ---------------------------
 
@@ -143,7 +147,7 @@ void Core::Init()
 
 	// Create skybox
 	m_skybox = new Skybox();
-	m_skybox->loadTexture("..\\Ressources\\Textures\\skybox");
+	//m_skybox->loadTexture("..\\Ressources\\Textures\\skybox");
 	m_skybox->setShader(m_shaders.GetProgram(skybox_shader));
 
 	// Scene creations -------------------

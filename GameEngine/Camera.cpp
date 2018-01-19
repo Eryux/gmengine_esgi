@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "GameObject.h"
+#include "SceneLoader.h"
 
 #include "gtc\matrix_transform.hpp"
 #include "gtx\quaternion.hpp"
@@ -7,8 +8,19 @@
 
 using namespace Engine;
 
+Camera::Camera() {
+	Core::Get()->m_camera = this;
+
+	SceneLoader::BindComponent(".PAVCamera@Engine@@");
+	SceneLoader::BindParam(".PAVCamera@Engine@@", "m_fov", &m_fov, ".M");
+	SceneLoader::BindParam(".PAVCamera@Engine@@", "m_near_plane", &m_near_plane, ".M");
+	SceneLoader::BindParam(".PAVCamera@Engine@@", "m_far_plane", &m_far_plane, ".M");
+}
+
 void Camera::start() 
 {
+	sf::RenderWindow * w = Core::Get()->GetWindowContext();
+	m_ratio = ((float) w->getSize().x) /  (float) w->getSize().y;
 	m_transform = m_gameObject->getTransform();
 }
 

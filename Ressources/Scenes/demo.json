@@ -3,9 +3,9 @@
 
     "gameobjects": [
         {
-            "name":"Camera",
+            "name":"Camera 1",
             "id":1,
-            "position":[0,0,0],
+            "position":[0,10.0,-10.0],
             "rotation":[0,0,0],
             "scale":[1,1,1],
             "enabled":true,
@@ -13,6 +13,7 @@
                 {
                     "type":".PAVCamera@Engine@@",
                     "id":2,
+                    "enabled":true,
                     "params": [
                         {"name":"m_fov","value":70.0,"type":".M","instance":false},
                         {"name":"m_near_plane","value":0.1,"type":".M","instance":false},
@@ -22,6 +23,7 @@
                 {
                     "type":".PAVMoveCamera_Component@Engine@@",
                     "id":3,
+                    "enabled":true,
                     "params": [
                         {"name":"m_speed","value":3.0,"type":".M","instance":false},
                         {"name":"m_camera","value":2,"type":".PAVCamera@Engine@@","instance":true}

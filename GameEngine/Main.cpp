@@ -3,40 +3,12 @@
 #include <fstream>
 #include <map>
 #include <memory>
+#include <typeindex>
 
 #include "Engine.h"
+#include "SceneLoader.h"
 
 Engine::Core * Engine::Core::m_instance = nullptr;
-
-/*
-std::map<std::string, void *> g_cast_functions;
-
-void bindType(std::string type_name, void * func) {
-	g_cast_functions[type_name] = func;
-}
-
-class A {
-
-public:
-	static A * Instantiate() {
-		return new A;
-	}
-
-};
-
-class B {
-
-public:
-	static B * Instantiate(void * in) {
-		return reinterpret_cast<B*>(reinterpret_cast<long>(in));
-	}
-
-};
-
-template<typename T>
-T * typecast_MoveCamera() {
-	return new T;
-}*/
 
 int main()
 {
@@ -53,6 +25,7 @@ int main()
 	write_file << typeid(a).name() << std::endl;
 	write_file.close();*/
 
+	//Engine::SceneLoader::ExtractTypename("../supported_type.txt");
 
 	std::cout << "Load core function ..." << std::endl;
 	Engine::Core * dmn_engine = Engine::Core::Get();
@@ -68,8 +41,8 @@ int main()
 	Engine::Core::Kill();
 
 	std::cout << "Engine stopped." << std::endl;
-
-	std::cout << "Press ENTER to continue... " << std::endl;
+	
+	std::cout << "Press ENTER to quit ... " << std::endl;
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	return 0;

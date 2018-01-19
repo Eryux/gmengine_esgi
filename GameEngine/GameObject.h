@@ -18,7 +18,6 @@ namespace Engine {
 	private:
 		std::vector<Component*> m_components;
 
-		std::string m_objectName;
 
 		GameObjectState m_state = ENABLE;
 
@@ -27,6 +26,8 @@ namespace Engine {
 		Transform* m_transform;
 
 	public:
+		std::string m_objectName;
+
 		GameObject(std::string name);
 
 		template<typename T>

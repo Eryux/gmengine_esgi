@@ -1,10 +1,18 @@
 #include "MoveCamera_Component.h"
+#include "SceneLoader.h"
 
 #include <SFML/Window.hpp>
 
 #include <iostream>
 
 using namespace Engine;
+
+MoveCamera_Component::MoveCamera_Component() 
+{
+	SceneLoader::BindComponent(".PAVMoveCamera_Component@Engine@@");
+	SceneLoader::BindParam(".PAVMoveCamera_Component@Engine@@", "m_speed", &m_speed, ".M");
+	SceneLoader::BindParam(".PAVMoveCamera_Component@Engine@@", "m_camera", &m_camera, ".PAVCamera@Engine@@");
+}
 
 void MoveCamera_Component::start()
 {

@@ -1,0 +1,18 @@
+name,type
+int	.H
+double	.N
+float	.M
+long	.J
+uint	.I
+int*	.PAH
+double*	.PAN
+float*	.PAM
+long*	.PAJ
+uint*	.PAI
+gameobject	.PAVGameObject@Engine@@
+component	.PAVComponent@Engine@@
+renderer	.PAVRenderer@Engine@@
+transform	.PAVTransform@Engine@@
+camera	.PAVCamera@Engine@@
+movecamera	.PAVMoveCamera_Component@Engine@@
+fpscounter	.PAVFPSCounter@Engine@@

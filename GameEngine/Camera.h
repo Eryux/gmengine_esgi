@@ -19,6 +19,8 @@ namespace Engine {
 		float m_near_plane;
 		float m_far_plane;
 
+		Camera();
+
 		void start();
 
 		glm::mat4 GetViewMatrix();
