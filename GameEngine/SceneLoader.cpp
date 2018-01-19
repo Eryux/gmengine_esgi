@@ -13,11 +13,11 @@ using namespace Engine;
 std::unordered_map<std::string, std::unordered_map<std::string, component_param_t>> SceneLoader::s_component_params;
 std::unordered_map<std::string, std::size_t> SceneLoader::s_literal_to_hash;
 std::unordered_map<std::type_index, std::size_t> SceneLoader::s_type_to_hash;
-std::unordered_map<unsigned int, void *> SceneLoader::s_instances;
 
 void SceneLoader::LoadScene(std::string scene_file) 
 {
 	Core * core = Core::Get();
+	std::unordered_map<unsigned int, void *> s_instances;
 
 	std::ifstream input_file(scene_file);
 	nlohmann::json j; input_file >> j;

@@ -32,9 +32,6 @@ namespace Engine {
 		// type index to hash
 		static std::unordered_map<std::type_index, std::size_t> s_type_to_hash;
 
-		// id to instance
-		static std::unordered_map<unsigned int, void *> s_instances;
-
 		static void SetInstanceParam(void * instance, component_param_t * param);
 	public:
 		static void Init();
