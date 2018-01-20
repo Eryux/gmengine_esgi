@@ -66,6 +66,28 @@ void GameObject::setActive(bool active)
 	m_state = (active) ? GameObjectState::ENABLE : GameObjectState::DISABLE;
 }
 
+void GameObject::onCollision(GameObject * object, physx::PxActor * collider)
+{
+	unsigned int component_size = m_components.size();
+	for (int i = 0; i < component_size; ++i) {
+		if (m_components[i]->getState() == ComponentState::ENABLED)
+		{
+			m_components[i]->onCollision(object, collider);
+		}
+	}
+}
+
+void GameObject::onTrigger(GameObject * object, physx::PxActor * collider)
+{
+	unsigned int component_size = m_components.size();
+	for (int i = 0; i < component_size; ++i) {
+		if (m_components[i]->getState() == ComponentState::ENABLED)
+		{
+			m_components[i]->onTrigger(object, collider);
+		}
+	}
+}
+
 GameObject* GameObject::getParent()
 {
 	return m_parentObject;
@@ -78,6 +100,8 @@ Transform* GameObject::getTransform()
 
 void GameObject::destroy()
 {
+	PhysicEvent::RemovePhysicObject(this);
+
 	for (int i = 0; i < m_components.size(); i++) {
 		m_components[i]->remove();
 		delete m_components[i];

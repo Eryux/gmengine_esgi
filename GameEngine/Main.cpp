@@ -1,5 +1,4 @@
 #include <iostream>
-#include <iostream>
 #include <fstream>
 #include <map>
 #include <memory>
@@ -25,7 +24,7 @@ int main()
 	write_file << typeid(a).name() << std::endl;
 	write_file.close();*/
 
-	//Engine::SceneLoader::ExtractTypename("../supported_type.txt");
+	Engine::SceneLoader::ExtractTypename("../supported_type.txt");
 
 	std::cout << "Load core function ..." << std::endl;
 	Engine::Core * dmn_engine = Engine::Core::Get();

@@ -4,11 +4,15 @@ double	.N
 float	.M
 long	.J
 uint	.I
+string	.?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@
+bool	._N
 int*	.PAH
 double*	.PAN
 float*	.PAM
 long*	.PAJ
 uint*	.PAI
+bool[]	.$$BY0A@_N
+bool*	.PA_N
 gameobject	.PAVGameObject@Engine@@
 component	.PAVComponent@Engine@@
 renderer	.PAVRenderer@Engine@@
@@ -16,3 +20,4 @@ transform	.PAVTransform@Engine@@
 camera	.PAVCamera@Engine@@
 movecamera	.PAVMoveCamera_Component@Engine@@
 fpscounter	.PAVFPSCounter@Engine@@
+rigidbody	.PAVRigidBody@Engine@@

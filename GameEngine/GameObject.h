@@ -3,6 +3,7 @@
 #ifndef ENGINE_GAMEOBJECT_H
 #define ENGINE_GAMEOBJECT_H
 
+#include <PxPhysicsAPI.h>
 #include <vector>
 
 #include "Transform.h"
@@ -72,6 +73,10 @@ namespace Engine {
 		GameObject* getParent();
 
 		Transform* getTransform();
+
+		void onCollision(GameObject * object, physx::PxActor * collider);
+
+		void onTrigger(GameObject * object, physx::PxActor * collider);
 
 		void destroy();
 

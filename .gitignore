@@ -3,6 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+Debug/*
+GameEngine/Debug/*
+Release/*
+x64/*
+GameEngine/x64/*
+vendors/physx-3.4/*
+
 # User-specific files
 *.suo
 *.user

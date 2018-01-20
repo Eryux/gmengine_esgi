@@ -1,0 +1,165 @@
+{
+    "skybox": "..\\Ressources\\Textures\\skybox",
+    "gravity": [0.0,-9.81,0.1],
+
+    "gameobjects": [
+        {
+            "name":"Camera",
+            "id":1,
+            "position":[0,3.0,-10.0],
+            "rotation":[0,0,0],
+            "scale":[1,1,1],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVCamera@Engine@@",
+                    "id":2,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_fov","value":70.0,"type":".M","instance":false},
+                        {"name":"m_near_plane","value":0.1,"type":".M","instance":false},
+                        {"name":"m_far_plane","value":10000.0,"type":".M","instance":false}
+                    ]
+                },
+                {
+                    "type":".PAVMoveCamera_Component@Engine@@",
+                    "id":3,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_speed","value":3.0,"type":".M","instance":false},
+                        {"name":"m_camera","value":2,"type":".PAVCamera@Engine@@","instance":true}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"GameController",
+            "id":4,
+            "position":[0,0,0],
+            "rotation":[0,0,0],
+            "scale":[0,0,0],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVFPSCounter@Engine@@",
+                    "id":5,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_font","value":"..\\Ressources\\Fonts\\arial.ttf","type":".STRING","instance":false}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"Floor",
+            "id":8,
+            "position":[0.0,-0.05,0.0],
+            "rotation":[0,0,0],
+            "scale":[100.0,0.1,100.0],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVRenderer@Engine@@",
+                    "id":9,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_model_name","value":"..\\Ressources\\Models\\pcube.obj","type":".STRING","instance":false},
+                        {"name":"m_material_path","value":"..\\Ressources\\Models\\","type":".STRING","instance":false},
+                        {"name":"m_material_id","value":0,"type":".H","instance":false},
+                        {"name":"m_shader_id","value":0,"type":".H","instance":false}
+                    ]
+                },
+                {
+                    "type":".PAVRigidBody@Engine@@",
+                    "id":16,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_mass","value":0.1,"type":".M","instance":false},
+                        {"name":"m_static","value":true,"type":"._N","instance":false},
+                        {"name":"m_kinematic","value":false,"type":"._N","instance":false},
+                        {"name":"m_trigger","value":false,"type":"._N","instance":false},
+                        {"name":"m_shape","value":1,"type":".I","instance":false},
+                        {"name":"m_material","value":0,"type":".I","instance":false},
+                        {"name":"m_shape_param","value":[100.0,0.1,100.0],"type":".PAM","instance":false},
+                        {"name":"m_constraint_pos","value":[false,false,false],"type":".PA_N","instance":false},
+                        {"name":"m_constraint_rot","value":[false,false,false],"type":".PA_N","instance":false}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"Cube Physique 2",
+            "id":10,
+            "position":[1.5,1.2,0.0],
+            "rotation":[0,0,0],
+            "scale":[1.0,1.0,1.0],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVRenderer@Engine@@",
+                    "id":11,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_model_name","value":"..\\Ressources\\Models\\pcube.obj","type":".STRING","instance":false},
+                        {"name":"m_material_path","value":"..\\Ressources\\Models\\","type":".STRING","instance":false},
+                        {"name":"m_material_id","value":0,"type":".H","instance":false},
+                        {"name":"m_shader_id","value":0,"type":".H","instance":false}
+                    ]
+                },
+                {
+                    "type":".PAVRigidBody@Engine@@",
+                    "id":15,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_mass","value":0.1,"type":".M","instance":false},
+                        {"name":"m_static","value":true,"type":"._N","instance":false},
+                        {"name":"m_kinematic","value":false,"type":"._N","instance":false},
+                        {"name":"m_trigger","value":false,"type":"._N","instance":false},
+                        {"name":"m_shape","value":1,"type":".I","instance":false},
+                        {"name":"m_material","value":0,"type":".I","instance":false},
+                        {"name":"m_shape_param","value":[1.0,1.0,1.0],"type":".PAM","instance":false},
+                        {"name":"m_constraint_pos","value":[false,false,false],"type":".PA_N","instance":false},
+                        {"name":"m_constraint_rot","value":[false,false,false],"type":".PA_N","instance":false}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"Cube Physique",
+            "id":13,
+            "position":[0.0,30.0,0.0],
+            "rotation":[0,0,0],
+            "scale":[1.0,1.0,1.0],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVRenderer@Engine@@",
+                    "id":14,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_model_name","value":"..\\Ressources\\Models\\pcube.obj","type":".STRING","instance":false},
+                        {"name":"m_material_path","value":"..\\Ressources\\Models\\","type":".STRING","instance":false},
+                        {"name":"m_material_id","value":0,"type":".H","instance":false},
+                        {"name":"m_shader_id","value":0,"type":".H","instance":false}
+                    ]
+                },
+                {
+                    "type":".PAVRigidBody@Engine@@",
+                    "id":14,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_mass","value":0.5,"type":".M","instance":false},
+                        {"name":"m_static","value":false,"type":"._N","instance":false},
+                        {"name":"m_kinematic","value":false,"type":"._N","instance":false},
+                        {"name":"m_trigger","value":false,"type":"._N","instance":false},
+                        {"name":"m_shape","value":1,"type":".I","instance":false},
+                        {"name":"m_material","value":0,"type":".I","instance":false},
+                        {"name":"m_shape_param","value":[1.0,1.0,1.0],"type":".PAM","instance":false},
+                        {"name":"m_constraint_pos","value":[false,false,false],"type":".PA_N","instance":false},
+                        {"name":"m_constraint_rot","value":[false,false,false],"type":".PA_N","instance":false}
+                    ]
+                }
+            ]
+        }
+    ]
+}

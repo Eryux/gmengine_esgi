@@ -2,6 +2,7 @@
 
 #include "json.h"
 #include "Skybox.h"
+#include "RigidBody.h"
 
 #include <iostream>
 #include <fstream>
@@ -17,6 +18,8 @@ std::unordered_map<std::type_index, std::size_t> SceneLoader::s_type_to_hash;
 void SceneLoader::LoadScene(std::string scene_file) 
 {
 	Core * core = Core::Get();
+	core->ClearScene();
+
 	std::unordered_map<unsigned int, void *> s_instances;
 
 	std::ifstream input_file(scene_file);
@@ -35,7 +38,7 @@ void SceneLoader::LoadScene(std::string scene_file)
 		nlohmann::json a_position = j_gameobject["position"];
 		o_transform->setLocalPosition(glm::vec3(a_position[0].get<float>(), a_position[1].get<float>(), a_position[2].get<float>()));
 		nlohmann::json a_rotation = j_gameobject["rotation"];
-		o_transform->setLocalRotation(glm::vec3(a_rotation[0].get<float>(), a_rotation[1].get<float>(), a_rotation[2].get<float>()));
+		o_transform->setLocalRotation(glm::radians(glm::vec3(a_rotation[0].get<float>(), a_rotation[1].get<float>(), a_rotation[2].get<float>())));
 		nlohmann::json a_scale = j_gameobject["scale"];
 		o_transform->setLocalSize(glm::vec3(a_scale[0].get<float>(), a_scale[1].get<float>(), a_scale[2].get<float>()));
 		
@@ -83,6 +86,31 @@ void SceneLoader::LoadScene(std::string scene_file)
 					else if (type_hash == s_type_to_hash[std::type_index(typeid(unsigned int))]) {
 						unsigned int * v_param = static_cast<unsigned int*>(ptr_param->param);
 						*v_param = j_param["value"].get<unsigned int>();
+					}
+					else if (type_hash == s_type_to_hash[std::type_index(typeid(std::string))]) {
+						std::string * v_param = static_cast<std::string*>(ptr_param->param);
+						*v_param = j_param["value"].get<std::string>();
+					}
+					else if (type_hash == s_type_to_hash[std::type_index(typeid(bool))]) {
+						bool * v_param = static_cast<bool*>(ptr_param->param);
+						*v_param = j_param["value"].get<bool>();
+					}
+					else if (type_hash == s_type_to_hash[std::type_index(typeid(bool*))]) {
+						bool ** v_param = static_cast<bool**>(ptr_param->param);
+
+						// http://en.cppreference.com/w/cpp/container/vector_bool
+						std::vector<bool> v = j_param["value"].get<std::vector<bool>>();
+						bool * r = new bool[v.size()];
+						for (int i = 0; i < v.size(); i++) { r[i] = v[i]; };
+						*v_param = r;
+					}
+					else if (type_hash == s_type_to_hash[std::type_index(typeid(float*))]) {
+						float ** v_param = static_cast<float**>(ptr_param->param);
+
+						std::vector<float> v = j_param["value"].get<std::vector<float>>();
+						float * r = new float[v.size()];
+						for (int i = 0; i < v.size(); i++) { r[i] = v[i]; };
+						*v_param = r;
 					}
 				}
 			}
@@ -160,6 +188,11 @@ void SceneLoader::SetInstanceParam(void * instance, component_param_t * param)
 		Camera ** ptr_param = static_cast<Camera**>(param->param);
 		*(ptr_param) = o_instance;
 	}
+	else if (type_hash == s_type_to_hash[std::type_index(typeid(RigidBody*))]) {
+		RigidBody * o_instance = static_cast<RigidBody*>(instance);
+		RigidBody ** ptr_param = static_cast<RigidBody**>(param->param);
+		*(ptr_param) = o_instance;
+	}
 }
 
 
@@ -185,11 +218,14 @@ void SceneLoader::Init()
 	s_literal_to_hash[".M"] = typeid(float).hash_code();
 	s_literal_to_hash[".J"] = typeid(long).hash_code();
 	s_literal_to_hash[".I"] = typeid(unsigned int).hash_code();
+	s_literal_to_hash["._N"] = typeid(bool).hash_code();
 	s_literal_to_hash[".PAH"] = typeid(int*).hash_code();
 	s_literal_to_hash[".PAN"] = typeid(double*).hash_code();
 	s_literal_to_hash[".PAM"] = typeid(float*).hash_code();
 	s_literal_to_hash[".PAJ"] = typeid(long*).hash_code();
 	s_literal_to_hash[".PAI"] = typeid(unsigned int*).hash_code();
+	s_literal_to_hash[".PA_N"] = typeid(bool*).hash_code();
+	s_literal_to_hash[".STRING"] = typeid(std::string).hash_code();
 	s_literal_to_hash[".PAVGameObject@Engine@@"]		= typeid(GameObject*).hash_code();
 	s_literal_to_hash[".PAVComponent@Engine@@"]			= typeid(Component*).hash_code();
 	s_literal_to_hash[".PAVRenderer@Engine@@"]			= typeid(Renderer*).hash_code();
@@ -197,19 +233,22 @@ void SceneLoader::Init()
 	s_literal_to_hash[".PAVFPSCounter@Engine@@"]		= typeid(FPSCounter*).hash_code();
 	s_literal_to_hash[".PAVCamera@Engine@@"]			= typeid(Camera*).hash_code();
 	s_literal_to_hash[".PAVMoveCamera_Component@Engine@@"] = typeid(MoveCamera_Component*).hash_code();
-
+	s_literal_to_hash[".PAVRigidBody@Engine@@"]			   = typeid(RigidBody*).hash_code();
 
 	s_type_to_hash[std::type_index(typeid(int))] = typeid(int).hash_code();
 	s_type_to_hash[std::type_index(typeid(float))] = typeid(float).hash_code();
 	s_type_to_hash[std::type_index(typeid(double))] = typeid(double).hash_code();
 	s_type_to_hash[std::type_index(typeid(long))] = typeid(long).hash_code();
 	s_type_to_hash[std::type_index(typeid(unsigned int))] = typeid(unsigned int).hash_code();
+	s_type_to_hash[std::type_index(typeid(bool))] = typeid(bool).hash_code();
 
 	s_type_to_hash[std::type_index(typeid(int*))] = typeid(int*).hash_code();
 	s_type_to_hash[std::type_index(typeid(float*))] = typeid(float*).hash_code();
 	s_type_to_hash[std::type_index(typeid(double*))] = typeid(double*).hash_code();
 	s_type_to_hash[std::type_index(typeid(long*))] = typeid(long*).hash_code();
 	s_type_to_hash[std::type_index(typeid(unsigned int*))] = typeid(unsigned int*).hash_code();
+	s_type_to_hash[std::type_index(typeid(std::string))] = typeid(std::string).hash_code();
+	s_type_to_hash[std::type_index(typeid(bool*))] = typeid(bool*).hash_code();
 
 	s_type_to_hash[std::type_index(typeid(GameObject*))] = typeid(GameObject*).hash_code();
 	s_type_to_hash[std::type_index(typeid(Component*))] = typeid(Component*).hash_code();
@@ -219,6 +258,7 @@ void SceneLoader::Init()
 
 	s_type_to_hash[std::type_index(typeid(FPSCounter*))] = typeid(FPSCounter*).hash_code();
 	s_type_to_hash[std::type_index(typeid(MoveCamera_Component*))] = typeid(MoveCamera_Component*).hash_code();
+	s_type_to_hash[std::type_index(typeid(RigidBody*))] = typeid(RigidBody*).hash_code();
 }
 
 template<typename T>
@@ -261,6 +301,8 @@ T * SceneLoader::Instantiate(std::string type_name)
 		r = new MoveCamera_Component();
 	else if (type_hash == s_type_to_hash[std::type_index(typeid(FPSCounter*))])
 		r = new FPSCounter();
+	else if (type_hash == s_type_to_hash[std::type_index(typeid(RigidBody*))])
+		r = new RigidBody();
 	else {
 		r = nullptr;
 	}
@@ -280,12 +322,16 @@ void SceneLoader::ExtractTypename(std::string out_file)
 	write_file << "float\t" << typeid(float).raw_name() << std::endl;
 	write_file << "long\t" << typeid(long).raw_name() << std::endl;
 	write_file << "uint\t" << typeid(unsigned int).raw_name() << std::endl;
+	write_file << "string\t" << typeid(std::string).raw_name() << std::endl;
+	write_file << "bool\t" << typeid(bool).raw_name() << std::endl;
 
 	write_file << "int*\t" << typeid(int*).raw_name() << std::endl;
 	write_file << "double*\t" << typeid(double*).raw_name() << std::endl;
 	write_file << "float*\t" << typeid(float*).raw_name() << std::endl;
 	write_file << "long*\t" << typeid(long*).raw_name() << std::endl;
 	write_file << "uint*\t" << typeid(unsigned int*).raw_name() << std::endl;
+	write_file << "bool[]\t" << typeid(bool[]).raw_name() << std::endl;
+	write_file << "bool*\t" << typeid(bool*).raw_name() << std::endl;
 
 	write_file << "gameobject\t" << typeid(GameObject*).raw_name() << std::endl;
 	write_file << "component\t" << typeid(Component*).raw_name() << std::endl;
@@ -294,6 +340,7 @@ void SceneLoader::ExtractTypename(std::string out_file)
 	write_file << "camera\t" << typeid(Camera*).raw_name() << std::endl;
 	write_file << "movecamera\t" << typeid(MoveCamera_Component*).raw_name() << std::endl;
 	write_file << "fpscounter\t" << typeid(FPSCounter*).raw_name() << std::endl;
+	write_file << "rigidbody\t" << typeid(RigidBody*).raw_name() << std::endl;
 
 	write_file.close();
 }

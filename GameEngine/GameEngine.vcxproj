@@ -74,12 +74,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\vendors\SFML-2.4.2\include;..\vendors\glew-2.1.0\include;..\vendors\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendors\physx-3.4\include;..\vendors\SFML-2.4.2\include;..\vendors\glew-2.1.0\include;..\vendors\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\vendors\SFML-2.4.2\lib;..\vendors\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\vendors\physx-3.4\lib\vc14win32;..\vendors\SFML-2.4.2\lib;..\vendors\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;opengl32.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -132,14 +133,15 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="Dummy.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GUI_FPSCounter.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MoveCamera_Component.cpp" />
+    <ClCompile Include="Physic.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SceneLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
@@ -157,7 +159,9 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="MoveCamera_Component.h" />
+    <ClInclude Include="Physic.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SceneLoader.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />

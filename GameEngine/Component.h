@@ -3,6 +3,7 @@
 #ifndef ENGINE_COMPONENT_H
 #define ENGINE_COMPONENT_H
 
+#include "Physic.h"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 namespace Engine {
@@ -47,6 +48,10 @@ namespace Engine {
 
 		// Call when component is disabled (in current frame)
 		virtual void onDisable() {}
+
+		virtual void onCollision(GameObject * object, physx::PxActor * collider) {}
+
+		virtual void onTrigger(GameObject * object, physx::PxActor * collider) {}
 
 		// Call it for removing component
 		virtual void remove() {}

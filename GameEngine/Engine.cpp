@@ -1,12 +1,12 @@
 #include "Engine.h"
 #include "Renderer.h"
-#include "Dummy.h"
 #include "Input.h"
-#include "MoveCamera_Component.h"
 #include "Texture.h"
 #include "Skybox.h"
 #include "SceneLoader.h"
+#include "Physic.h"
 
+#include "MoveCamera_Component.h"
 #include "GUI_FPSCounter.h"
 
 #include <SFML/System/Time.hpp>
@@ -62,72 +62,22 @@ void Core::RemoveRenderer(Renderer *r)
 
 void Core::InitScene()
 {
+	// Init physx scene
+	Physic::InitScene();
+	Physic::s_scene->setGravity(physx::PxVec3(0.f, -9.81f, 0.f));
+
+	// Load main scene
 	SceneLoader::Init();
-	SceneLoader::LoadScene("..\\Ressources\\Scenes\\demo.json");
+	SceneLoader::LoadScene("..\\Ressources\\Scenes\\main.json");
 
-	// Camera ---------------------------------
-	
-	/*GameObject * main_camera = new GameObject("camera");
-	m_gameObjects.push_back(main_camera);
-
-	m_camera = new Camera();
-	m_camera->m_fov = 70.0f;
-	m_camera->m_near_plane = 0.1f;
-	m_camera->m_far_plane = 10000.f;
-	m_camera->m_ratio = 800.0f / 600.0f;
-	main_camera->addComponent(m_camera);
-
-	MoveCamera_Component * camera_move_cp = new MoveCamera_Component();
-	camera_move_cp->m_speed = 3.f;
-	main_camera->addComponent(camera_move_cp);
-
-	main_camera->getTransform()->setLocalPosition(glm::vec3(0.0f, 5.0f, -5.0f));*/
-
-	// 3D Object ---------------------------
-
-	// Dragon
-	GameObject * dragon_obj = new GameObject("dragon");
-	m_gameObjects.push_back(dragon_obj);
-
-	Renderer * dragon_renderer = new Renderer("..\\Ressources\\Models\\alduin\\alduin-dragon.obj", "..\\Ressources\\Models\\alduin\\");
-	dragon_renderer->SetShader(m_shaders.GetShader(g_LAMBER_SHADER));
-	dragon_renderer->SetMaterial(0);
-	dragon_obj->addComponent(dragon_renderer);
-	dragon_obj->getTransform()->setLocalPosition(glm::vec3(1.2f, 3.5f, 0.0f));
-	dragon_obj->getTransform()->setLocalSize(glm::vec3(0.005f, 0.005f, 0.005f));
-	dragon_obj->getTransform()->setLocalRotation(glm::rotate(dragon_obj->getTransform()->getLocalRotation(), glm::radians(180.f), glm::vec3(0.f, 0.f, 1.f)));
-
-	int dragon_texture = Texture::LoadTexture("..\\Ressources\\Models\\alduin\\alduin.jpg");
-	dragon_renderer->SetTexture(dragon_texture);
-
-	// Floor
-	GameObject * floor_obj = new GameObject("floor");
-	m_gameObjects.push_back(floor_obj);
-
-	Renderer * floor_renderer = new Renderer("..\\Ressources\\Models\\pcube.obj", "..\\Ressources\\Models\\");
-	floor_renderer->SetShader(m_shaders.GetShader(g_LAMBER_SHADER));
-	floor_renderer->SetMaterial(0);
-	floor_obj->addComponent(floor_renderer);
-	floor_obj->getTransform()->setLocalPosition(glm::vec3(0.0f, -0.05f, 0.00f));
-	floor_obj->getTransform()->setLocalSize(glm::vec3(100.0f, 0.1f, 100.0f));
-
-	// Table
-	GameObject * table_obj = new GameObject("table");
-	m_gameObjects.push_back(table_obj);
-
-	Renderer * table_renderer = new Renderer("..\\Ressources\\Models\\pcube.obj", "..\\Ressources\\Models\\");
-	table_renderer->SetShader(m_shaders.GetShader(g_LAMBER_SHADER));
-	table_renderer->SetMaterial(0);
-	table_obj->addComponent(table_renderer);
-	table_obj->getTransform()->setLocalPosition(glm::vec3(0.0f, 1.2f, 0.0f));
-	table_obj->getTransform()->setLocalSize(glm::vec3(1.0f, 1.2f, 1.0f));
+	// ADDITIONAL SCENE OBJECT (DEBUG ONLY) ---------------------------------
 
 	// FPS Counter
-	GameObject * fpsc_obj = new GameObject("fpscounter");
+	/*GameObject * fpsc_obj = new GameObject("fpscounter");
 	FPSCounter * fpsc_component = new FPSCounter();
 	fpsc_component->SetFont("..\\Ressources\\Fonts\\arial.ttf");
 	fpsc_obj->addComponent(fpsc_component);
-	m_gameObjects.push_back(fpsc_obj);
+	m_gameObjects.push_back(fpsc_obj);*/
 }
 
 void Core::Init()
@@ -147,8 +97,10 @@ void Core::Init()
 
 	// Create skybox
 	m_skybox = new Skybox();
-	//m_skybox->loadTexture("..\\Ressources\\Textures\\skybox");
 	m_skybox->setShader(m_shaders.GetProgram(skybox_shader));
+
+	// Physx init ------------------------
+	Physic::Init();
 
 	// Scene creations -------------------
 	InitScene();
@@ -218,7 +170,7 @@ void Core::Run()
 
 		Input::refresh();
 
-		// gestion des évènements
+		// Events --------------------------------------------
 		sf::Event event;
 		while (m_window->pollEvent(event))
 		{
@@ -260,7 +212,7 @@ void Core::Run()
 			}
 		}
 
-		// Update
+		// Update --------------------------------------------
 		int size_objects = m_gameObjects.size();
 		for (int i = 0; i < size_objects; i++) {
 			if (m_gameObjects[i]->getState() == GameObjectState::ENABLE)
@@ -275,10 +227,10 @@ void Core::Run()
 			}
 		}
 
-		// effacement les tampons de couleur/profondeur
 		m_window->clear();
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// DRAW --------------------------------------------
 
 		// Draw skybox
 		m_skybox->draw();
@@ -289,6 +241,9 @@ void Core::Run()
 			if (m_renderers[i]->getState() == ComponentState::ENABLED)
 				m_renderers[i]->draw();
 		}
+
+		// Simulate Physic
+		Physic::Run(m_deltaTime);
 
 		// Draw GUI
 		m_window->pushGLStates();
@@ -306,7 +261,7 @@ void Core::Run()
 		}
 		m_window->popGLStates();
 
-		// termine la trame courante (en interne, échange les deux tampons de rendu)
+		// FPS lock --------------------------------------------
 		m_window->display();
 
 		// Update time
@@ -321,23 +276,33 @@ void Core::Run()
 	glDisable(GL_TEXTURE_2D);
 }
 
-void Core::Free()
+void Core::ClearScene()
 {
 	for (int i = 0; i < m_vbo.size(); i++) {
 		glDeleteBuffers(1, &m_vbo[i]);
 		glDeleteBuffers(1, &m_ibo[i]);
 	}
+	m_ibo.clear();
+	m_vbo.clear();
 
-	delete m_skybox;
-
-	m_shaders.Free();
+	Renderer::FreeModelAll();
 
 	for (int i = 0; i < m_gameObjects.size(); i++) {
 		m_gameObjects[i]->destroy();
 		delete m_gameObjects[i];
 	}
+	m_gameObjects.clear();
 
-	Renderer::FreeModelAll();
+	Physic::FreeScene();
+}
 
+void Core::Free()
+{
+	ClearScene();
+	delete m_skybox;
+
+	m_shaders.Free();
 	delete m_window;
+
+	Physic::Free();
 }

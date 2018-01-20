@@ -30,7 +30,6 @@ namespace Engine {
 
 		sf::RenderWindow * m_window;
 
-		Shader m_shaders;
 
 		Core& operator=(const Core&) {};
 		Core(const Core&) {};
@@ -50,6 +49,8 @@ namespace Engine {
 		Camera * m_camera;
 
 		Skybox * m_skybox;
+
+		Shader m_shaders;
 
 		float m_deltaTime = 0.f;
 		float m_Time = 0.f;
@@ -77,6 +78,8 @@ namespace Engine {
 		void Init();
 
 		void Run();
+
+		void ClearScene();
 
 		void Free();
 

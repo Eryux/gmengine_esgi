@@ -1,22 +1,27 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "glm.hpp"
 #include "gtc\quaternion.hpp"
 
 #include "Component.h"
+#include "Physic.h"
 
 namespace Engine {
 
 	class Transform : public Component {
 
 	private:
+		static std::unordered_map<physx::PxActor *, Transform*> s_actors_transform;
+
+	public:
 		glm::vec3 m_localPosition;
 
 		glm::vec3 m_localSize;
 
 		glm::quat m_localRotation;
 
-	public:
 		Transform();
 
 		Transform(glm::vec3 pos);
@@ -62,6 +67,14 @@ namespace Engine {
 		glm::vec3 getUpVector();
 
 		glm::mat4 getWorlMatrix();
+
+		static void setTransform(physx::PxActor * a, physx::PxTransform transform);
+
+		static void addActor(physx::PxActor * a, Transform * t);
+
+		static void removeActor(physx::PxActor * a);
+
+		static Transform * getTransform(physx::PxActor * a);
 
 	};
 

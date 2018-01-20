@@ -2,6 +2,8 @@
 
 #include "Renderer.h"
 #include "Engine.h"
+#include "SceneLoader.h"
+#include "Texture.h"
 
 #include "gtc\matrix_transform.hpp"
 #include "gtc\type_ptr.hpp"
@@ -12,14 +14,21 @@ using namespace Engine;
 
 std::vector<model_t*> Renderer::s_models;
 
-Renderer::Renderer() { 
+Renderer::Renderer() {
+	SceneLoader::BindComponent(".PAVRenderer@Engine@@");
+	SceneLoader::BindParam(".PAVRenderer@Engine@@", "m_model_name", &m_model_name, ".STRING");
+	SceneLoader::BindParam(".PAVRenderer@Engine@@", "m_material_path", &m_material_path, ".STRING");
+	SceneLoader::BindParam(".PAVRenderer@Engine@@", "m_texture", &m_texture_name, ".STRING");
+	SceneLoader::BindParam(".PAVRenderer@Engine@@", "m_material_id", &m_material_id, ".H");
+	SceneLoader::BindParam(".PAVRenderer@Engine@@", "m_shader_id", &m_shader_id, ".H");
+
 	m_model_name = "";
 	m_material_path = "";
 }
 
 Renderer::Renderer(std::string model_path) {
 	m_model_name = model_path;
-	m_material_path = "../Ressources";
+	m_material_path = "..\\Ressources";
 }
 
 Renderer::Renderer(std::string model_path, std::string material_path) {
@@ -28,13 +37,22 @@ Renderer::Renderer(std::string model_path, std::string material_path) {
 }
 
 void Renderer::start() {
+	m_core = Core::Get();
 	m_transform = m_gameObject->getTransform();
+	
+	if (m_shader_id > -1) {
+		m_shader = m_core->m_shaders.GetShader(m_shader_id);
+	}
 
 	if (m_model_name != "")
 		Renderer::LoadModel(m_model_name, m_material_path);
 
 	m_model = GetModel();
-	m_core = Core::Get();
+
+	if (m_texture_name != "none") {
+		int tex_id = Texture::LoadTexture(m_texture_name);
+		SetTexture(tex_id);
+	}
 
 	m_core->AddRenderer(this);
 }
@@ -91,6 +109,13 @@ void Renderer::FreeModel(std::string model_path) {
 
 	if (model != nullptr) {
 		delete model->data;
+
+		if (model->vertices != nullptr)
+			delete model->vertices;
+
+		if (model->indexes != nullptr)
+			delete model->indexes;
+
 		delete model;
 	}
 

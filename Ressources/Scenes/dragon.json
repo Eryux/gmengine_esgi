@@ -1,0 +1,138 @@
+{
+    "skybox": "..\\Ressources\\Textures\\skybox",
+
+    "gameobjects": [
+        {
+            "name":"Camera",
+            "id":1,
+            "position":[0,10.0,-10.0],
+            "rotation":[0,0,0],
+            "scale":[1,1,1],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVCamera@Engine@@",
+                    "id":2,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_fov","value":70.0,"type":".M","instance":false},
+                        {"name":"m_near_plane","value":0.1,"type":".M","instance":false},
+                        {"name":"m_far_plane","value":10000.0,"type":".M","instance":false}
+                    ]
+                },
+                {
+                    "type":".PAVMoveCamera_Component@Engine@@",
+                    "id":3,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_speed","value":3.0,"type":".M","instance":false},
+                        {"name":"m_camera","value":2,"type":".PAVCamera@Engine@@","instance":true}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"GameController",
+            "id":4,
+            "position":[0,0,0],
+            "rotation":[0,0,0],
+            "scale":[0,0,0],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVFPSCounter@Engine@@",
+                    "id":5,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_font","value":"..\\Ressources\\Fonts\\arial.ttf","type":".STRING","instance":false}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"Dragon",
+            "id":6,
+            "position":[1.2,3.5,0.0],
+            "rotation":[0,0,0],
+            "scale":[0.005,0.005,0.005],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVRenderer@Engine@@",
+                    "id":7,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_model_name","value":"..\\Ressources\\Models\\alduin\\alduin-dragon.obj","type":".STRING","instance":false},
+                        {"name":"m_material_path","value":"..\\Ressources\\Models\\alduin\\","type":".STRING","instance":false},
+                        {"name":"m_texture","value":"..\\Ressources\\Models\\alduin\\alduin.jpg","type":".STRING","instance":false},
+                        {"name":"m_material_id","value":0,"type":".H","instance":false},
+                        {"name":"m_shader_id","value":0,"type":".H","instance":false}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"Floor",
+            "id":8,
+            "position":[0.0,-0.05,0.0],
+            "rotation":[0,0,0],
+            "scale":[100.0,0.1,100.0],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVRenderer@Engine@@",
+                    "id":9,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_model_name","value":"..\\Ressources\\Models\\pcube.obj","type":".STRING","instance":false},
+                        {"name":"m_material_path","value":"..\\Ressources\\Models\\","type":".STRING","instance":false},
+                        {"name":"m_material_id","value":0,"type":".H","instance":false},
+                        {"name":"m_shader_id","value":0,"type":".H","instance":false}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"Table",
+            "id":10,
+            "position":[0.0,1.2,0.0],
+            "rotation":[0,0,0],
+            "scale":[1.0,1.2,1.0],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVRenderer@Engine@@",
+                    "id":11,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_model_name","value":"..\\Ressources\\Models\\pcube.obj","type":".STRING","instance":false},
+                        {"name":"m_material_path","value":"..\\Ressources\\Models\\","type":".STRING","instance":false},
+                        {"name":"m_material_id","value":0,"type":".H","instance":false},
+                        {"name":"m_shader_id","value":0,"type":".H","instance":false}
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"Cube Physique",
+            "id":13,
+            "position":[0.0,2.0,0.0],
+            "rotation":[0,0,0],
+            "scale":[1.0,1.0,1.0],
+            "enabled":true,
+            "components": [
+                {
+                    "type":".PAVRenderer@Engine@@",
+                    "id":14,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_model_name","value":"..\\Ressources\\Models\\pcube.obj","type":".STRING","instance":false},
+                        {"name":"m_material_path","value":"..\\Ressources\\Models\\","type":".STRING","instance":false},
+                        {"name":"m_material_id","value":0,"type":".H","instance":false},
+                        {"name":"m_shader_id","value":0,"type":".H","instance":false}
+                    ]
+                }
+            ]
+        }
+    ]
+}

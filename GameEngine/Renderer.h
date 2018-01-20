@@ -49,9 +49,13 @@ namespace Engine {
 
 		int m_texture_id = -1;
 
+		int m_shader_id = -1;
+
 		std::string m_model_name;
 
 		std::string m_material_path;
+
+		std::string m_texture_name = "none";
 
 		Core * m_core = nullptr;
 

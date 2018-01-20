@@ -1,4 +1,5 @@
 #include "GUI_FPSCounter.h"
+#include "SceneLoader.h"
 
 #include <iomanip>
 #include <sstream>
@@ -7,10 +8,8 @@
 using namespace Engine;
 
 FPSCounter::FPSCounter() {
-	bool r_load = m_font.loadFromFile(m_font_file);
-	if (r_load) {
-		m_text.setFont(m_font);
-	}
+	SceneLoader::BindComponent(".PAVFPSCounter@Engine@@");
+	SceneLoader::BindParam(".PAVFPSCounter@Engine@@", "m_font", &m_font_file, ".STRING");
 
 	m_text.setString("00.0 FPS");
 	m_text.setColor(sf::Color::Red);
@@ -38,6 +37,8 @@ void FPSCounter::gui_draw(sf::RenderWindow * window) {
 
 void FPSCounter::start() {
 	Component::start();
+
+	SetFont(m_font_file);
 	m_last_refresh = 0.0f;
 	m_core = Core::Get();
 }
