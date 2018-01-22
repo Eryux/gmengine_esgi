@@ -17,6 +17,8 @@ namespace Engine {
 
 		Transform * m_transform;
 
+	public:
+
 		float m_param_mass = 1.0f;
 
 		bool m_param_static = false;
@@ -36,8 +38,6 @@ namespace Engine {
 		bool m_constraint_rotation_matrix[3] = { false, false, false };
 
 		void refreshPhysicLock();
-
-	public:
 
 		RigidBody();
 

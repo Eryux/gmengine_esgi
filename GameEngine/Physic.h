@@ -114,6 +114,8 @@ namespace Engine {
 
 		static physx::PxMaterial * GetMaterial(unsigned int);
 
+		static bool raycast(physx::PxVec3 origin, physx::PxVec3 direction, float dist, physx::PxRaycastBuffer * hit);
+
 	};
 
 }

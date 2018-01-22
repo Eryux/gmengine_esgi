@@ -33,3 +33,8 @@ glm::mat4 Camera::GetProjectionMatrix()
 {
 	return glm::perspective(m_fov, m_ratio, m_near_plane, m_far_plane);
 }
+
+glm::vec3 Camera::PointToWorld(glm::vec2 point, glm::vec4 viewport)
+{
+	return glm::unProject(glm::vec3(point.x, point.y, 0.0f), m_transform->getWorlMatrix() * GetViewMatrix(), GetProjectionMatrix(), viewport);
+}

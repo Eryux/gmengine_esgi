@@ -116,6 +116,11 @@ physx::PxMaterial * Physic::GetMaterial(unsigned int i)
 	return s_materials[i];
 }
 
+bool Physic::raycast(physx::PxVec3 origin, physx::PxVec3 direction, float dist, physx::PxRaycastBuffer * hit)
+{
+	return s_scene->raycast(origin, direction, dist, *hit);
+}
+
 // ------------------------------------------------------
 
 GameObject * PhysicEvent::GetColliderGameObject(physx::PxActor * collider)

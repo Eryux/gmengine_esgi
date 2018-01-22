@@ -87,7 +87,7 @@ void Core::Init()
 	SceneLoader::Init();
 
 	InitScene();
-	SceneLoader::LoadScene("..\\Ressources\\Scenes\\dragon.json");
+	SceneLoader::LoadScene("..\\Ressources\\Scenes\\lvl_3.json");
 }
 
 void Core::LoadScene(std::string path)

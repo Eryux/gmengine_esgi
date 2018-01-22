@@ -27,6 +27,8 @@ namespace Engine {
 
 		glm::mat4 GetProjectionMatrix();
 
+		glm::vec3 PointToWorld(glm::vec2 point, glm::vec4 viewport);
+
 	};
 
 };

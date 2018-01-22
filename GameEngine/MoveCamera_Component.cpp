@@ -95,4 +95,56 @@ void MoveCamera_Component::update()
 		sf::Mouse::setPosition(sf::Vector2i(window_size.x / 2, window_size.y / 2), *window);
 		Input::resetMousePosition(window_size.x / 2, window_size.y / 2);
 	}
+
+	/*if (Input::mouseDown(sf::Mouse::Button::Left))
+	{
+		std::cout << "left mouse down !" << std::endl;
+
+		int * mousePos = Input::mouseAxis();
+		auto viewport = m_core->GetWindowContext()->getSize();
+
+		glm::vec3 world_pos = m_camera->PointToWorld(
+			glm::vec2(mousePos[0], mousePos[1]),
+			glm::vec4(0, 0, viewport.x, viewport.y)
+		);
+
+		physx::PxRaycastBuffer hit;
+
+		glm::vec3 dir = m_cameraTransform->getForwardVector();
+		physx::PxVec3 direction = physx::PxVec3(dir.x, dir.y, dir.z);
+		physx::PxVec3 origin = physx::PxVec3(world_pos.x, world_pos.y, world_pos.z);
+
+		bool ray = Physic::raycast(origin, direction, 100.f, &hit);
+		if (ray)
+		{
+			physx::PxVec3 pos = hit.block.position;
+			std::cout << "Hit : ";
+			std::cout << "x " << pos.x << " y " << pos.y << " z " << pos.z << std::endl;
+			
+
+			GameObject * g = new GameObject("cube");
+
+			Transform * t = g->getTransform();
+			t->setLocalPosition(glm::vec3(world_pos.x, world_pos.y, world_pos.z));
+
+			Renderer * r = new Renderer("..\\Ressources\\Models\\pcube.obj", "..\\Ressources\\Models\\");
+			r->SetMaterial(0);
+			r->SetShader(m_core->m_shaders.GetShader(0));
+			g->addComponent(r);
+			m_core->m_gameObjects.push_back(g);
+
+			g = new GameObject("cube");
+
+			t = g->getTransform();
+			t->setLocalPosition(glm::vec3(pos.x, pos.y, pos.z));
+
+			r = new Renderer("..\\Ressources\\Models\\pcube.obj", "..\\Ressources\\Models\\");
+			r->SetMaterial(0);
+			r->SetShader(m_core->m_shaders.GetShader(0));
+			g->addComponent(r);
+			m_core->m_gameObjects.push_back(g);
+		}
+
+		std::cout << "x " << world_pos.x << " y " << world_pos.y << " z " << world_pos.z << std::endl;
+	}*/
 }

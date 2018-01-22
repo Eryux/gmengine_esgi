@@ -141,6 +141,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GUI_FPSCounter.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Level_3.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MoveCamera_Component.cpp" />
     <ClCompile Include="Physic.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="json.h" />
+    <ClInclude Include="Level_3.h" />
     <ClInclude Include="MoveCamera_Component.h" />
     <ClInclude Include="Physic.h" />
     <ClInclude Include="Renderer.h" />
