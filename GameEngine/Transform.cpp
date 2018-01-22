@@ -134,3 +134,8 @@ Transform * Transform::getTransform(physx::PxActor * a)
 {
 	return s_actors_transform[a];
 }
+
+void Transform::freeActor()
+{
+	s_actors_transform.clear();
+}

@@ -75,6 +75,8 @@ namespace Engine {
 
 		static GameObject * GetColliderGameObject(physx::PxActor * collider);
 
+		static void Free();
+
 	};
 
 	class Physic {

@@ -60,32 +60,12 @@ void Core::RemoveRenderer(Renderer *r)
 	}
 }
 
-void Core::InitScene()
-{
-	// Init physx scene
-	Physic::InitScene();
-	Physic::s_scene->setGravity(physx::PxVec3(0.f, -9.81f, 0.f));
-
-	// Load main scene
-	SceneLoader::Init();
-	SceneLoader::LoadScene("..\\Ressources\\Scenes\\main.json");
-
-	// ADDITIONAL SCENE OBJECT (DEBUG ONLY) ---------------------------------
-
-	// FPS Counter
-	/*GameObject * fpsc_obj = new GameObject("fpscounter");
-	FPSCounter * fpsc_component = new FPSCounter();
-	fpsc_component->SetFont("..\\Ressources\\Fonts\\arial.ttf");
-	fpsc_obj->addComponent(fpsc_component);
-	m_gameObjects.push_back(fpsc_obj);*/
-}
-
 void Core::Init()
 {
 	std::cout << "Current working directory : " << GetCurrentWorkingDir() << std::endl;
 
 	// OpenGL Context -------------------
-	m_window = new sf::RenderWindow(sf::VideoMode(800, 600), "D4MN Engine", sf::Style::Default, sf::ContextSettings(32));
+	m_window = new sf::RenderWindow(sf::VideoMode(1600,900), "D4MN Engine", sf::Style::Default, sf::ContextSettings(32));
 	m_window->setVerticalSyncEnabled(true);
 	m_window->setFramerateLimit(60);
 
@@ -103,7 +83,36 @@ void Core::Init()
 	Physic::Init();
 
 	// Scene creations -------------------
+	SceneLoader::Init();
+
 	InitScene();
+	SceneLoader::LoadScene("..\\Ressources\\Scenes\\dragon.json");
+}
+
+void Core::LoadScene(std::string path)
+{
+	m_scene_file = path;
+	m_waitForLoadScene = true;
+}
+
+void Core::InitScene()
+{
+	// Init physx scene
+	Physic::InitScene();
+	Physic::s_scene->setGravity(physx::PxVec3(0.f, -9.81f, 0.f));
+
+	// Load main scene
+	//SceneLoader::Init();
+	//SceneLoader::LoadScene("..\\Ressources\\Scenes\\dragon.json");
+
+	// ADDITIONAL SCENE OBJECT (DEBUG ONLY) ---------------------------------
+
+	// FPS Counter
+	/*GameObject * fpsc_obj = new GameObject("fpscounter");
+	FPSCounter * fpsc_component = new FPSCounter();
+	fpsc_component->SetFont("..\\Ressources\\Fonts\\arial.ttf");
+	fpsc_obj->addComponent(fpsc_component);
+	m_gameObjects.push_back(fpsc_obj);*/
 }
 
 int Core::CreateGLBuffer(GLfloat * vertices, GLuint * indexes, unsigned int size_v, unsigned int size_i)
@@ -168,6 +177,14 @@ void Core::Run()
 			}
 		}
 
+		if (m_waitForLoadScene) {
+			ClearScene();
+			InitScene();
+			SceneLoader::LoadScene(m_scene_file);
+			m_waitForLoadScene = false;
+			continue; // Jump render for current frame to let new object start before
+		}
+
 		Input::refresh();
 
 		// Events --------------------------------------------
@@ -181,6 +198,7 @@ void Core::Run()
 			else if (event.type == sf::Event::Resized)
 			{
 				glViewport(0, 0, event.size.width, event.size.height);
+				m_window->setSize(sf::Vector2u(event.size.width, event.size.height));
 				m_camera->m_ratio = (float) event.size.width / (float) event.size.height;
 			}
 			else if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) 
@@ -189,13 +207,17 @@ void Core::Run()
 					running = false;
 				}
 				if (event.key.code == sf::Keyboard::Key::F11 && event.type == sf::Event::KeyPressed) {
-					if (wireframe) {
+					if (wireframe)
 						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-					}
-					else {
+					else
 						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					}
 					wireframe = !wireframe;
+				}
+				if (event.key.code == sf::Keyboard::Key::F1 && event.type == sf::Event::KeyPressed) {
+					LoadScene("..\\Ressources\\Scenes\\main.json");
+				}
+				if (event.key.code == sf::Keyboard::Key::F2 && event.type == sf::Event::KeyPressed) {
+					LoadScene("..\\Ressources\\Scenes\\dragon.json");
 				}
 
 				Input::updateKeyState(event.key.code, event.type);
@@ -286,6 +308,7 @@ void Core::ClearScene()
 	m_vbo.clear();
 
 	Renderer::FreeModelAll();
+	m_renderers.clear();
 
 	for (int i = 0; i < m_gameObjects.size(); i++) {
 		m_gameObjects[i]->destroy();
@@ -293,6 +316,7 @@ void Core::ClearScene()
 	}
 	m_gameObjects.clear();
 
+	Transform::freeActor();
 	Physic::FreeScene();
 }
 

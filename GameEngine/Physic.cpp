@@ -79,7 +79,10 @@ bool Physic::InitScene()
 
 void Physic::FreeScene()
 {
-	//s_scene->release();
+	if (s_scene != nullptr)
+		s_scene->release();
+
+	PhysicEvent::Free();
 }
 
 
@@ -184,4 +187,9 @@ void PhysicEvent::RemovePhysicObject(GameObject * gameobject)
 	if (ptr_actor != nullptr) {
 		Transform::removeActor(ptr_actor);
 	}
+}
+
+void PhysicEvent::Free()
+{
+	s_colliders.clear();
 }

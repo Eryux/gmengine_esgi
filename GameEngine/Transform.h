@@ -74,6 +74,8 @@ namespace Engine {
 
 		static void removeActor(physx::PxActor * a);
 
+		static void freeActor();
+
 		static Transform * getTransform(physx::PxActor * a);
 
 	};

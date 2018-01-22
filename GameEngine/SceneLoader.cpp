@@ -18,7 +18,6 @@ std::unordered_map<std::type_index, std::size_t> SceneLoader::s_type_to_hash;
 void SceneLoader::LoadScene(std::string scene_file) 
 {
 	Core * core = Core::Get();
-	core->ClearScene();
 
 	std::unordered_map<unsigned int, void *> s_instances;
 
@@ -141,6 +140,8 @@ void SceneLoader::LoadScene(std::string scene_file)
 	if (core->m_skybox != nullptr) {
 		core->m_skybox->loadTexture(j["skybox"].get<std::string>());
 	}
+
+	s_instances.clear();
 }
 
 void SceneLoader::SetInstanceParam(void * instance, component_param_t * param)

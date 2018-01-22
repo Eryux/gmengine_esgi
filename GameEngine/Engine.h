@@ -30,6 +30,9 @@ namespace Engine {
 
 		sf::RenderWindow * m_window;
 
+		bool m_waitForLoadScene = false;
+
+		std::string m_scene_file;
 
 		Core& operator=(const Core&) {};
 		Core(const Core&) {};
@@ -76,6 +79,8 @@ namespace Engine {
 		int CreateGLBuffer(GLfloat * vertices, GLuint * indexes, unsigned int size_v, unsigned int size_i);
 
 		void Init();
+
+		void LoadScene(std::string path);
 
 		void Run();
 
