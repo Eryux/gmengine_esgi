@@ -5,6 +5,7 @@
 #include "Skybox.h"
 #include "SceneLoader.h"
 #include "Physic.h"
+#include "AudioPlayer.h"
 
 #include "MoveCamera_Component.h"
 #include "GUI_FPSCounter.h"
@@ -318,6 +319,7 @@ void Core::ClearScene()
 
 	Transform::freeActor();
 	Physic::FreeScene();
+	AudioPlayer::Free();
 }
 
 void Core::Free()

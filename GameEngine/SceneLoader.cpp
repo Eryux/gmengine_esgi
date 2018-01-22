@@ -3,6 +3,7 @@
 #include "json.h"
 #include "Skybox.h"
 #include "RigidBody.h"
+#include "AudioPlayer.h"
 
 #include <iostream>
 #include <fstream>
@@ -194,6 +195,11 @@ void SceneLoader::SetInstanceParam(void * instance, component_param_t * param)
 		RigidBody ** ptr_param = static_cast<RigidBody**>(param->param);
 		*(ptr_param) = o_instance;
 	}
+	else if (type_hash == s_type_to_hash[std::type_index(typeid(AudioPlayer*))]) {
+		AudioPlayer * o_instance = static_cast<AudioPlayer*>(instance);
+		AudioPlayer ** ptr_param = static_cast<AudioPlayer**>(param->param);
+		*(ptr_param) = o_instance;
+	}
 }
 
 
@@ -235,6 +241,7 @@ void SceneLoader::Init()
 	s_literal_to_hash[".PAVCamera@Engine@@"]			= typeid(Camera*).hash_code();
 	s_literal_to_hash[".PAVMoveCamera_Component@Engine@@"] = typeid(MoveCamera_Component*).hash_code();
 	s_literal_to_hash[".PAVRigidBody@Engine@@"]			   = typeid(RigidBody*).hash_code();
+	s_literal_to_hash[".PAVAudioPlayer@Engine@@"]		   = typeid(AudioPlayer*).hash_code();
 
 	s_type_to_hash[std::type_index(typeid(int))] = typeid(int).hash_code();
 	s_type_to_hash[std::type_index(typeid(float))] = typeid(float).hash_code();
@@ -260,6 +267,7 @@ void SceneLoader::Init()
 	s_type_to_hash[std::type_index(typeid(FPSCounter*))] = typeid(FPSCounter*).hash_code();
 	s_type_to_hash[std::type_index(typeid(MoveCamera_Component*))] = typeid(MoveCamera_Component*).hash_code();
 	s_type_to_hash[std::type_index(typeid(RigidBody*))] = typeid(RigidBody*).hash_code();
+	s_type_to_hash[std::type_index(typeid(AudioPlayer*))] = typeid(AudioPlayer*).hash_code();
 }
 
 template<typename T>
@@ -304,6 +312,8 @@ T * SceneLoader::Instantiate(std::string type_name)
 		r = new FPSCounter();
 	else if (type_hash == s_type_to_hash[std::type_index(typeid(RigidBody*))])
 		r = new RigidBody();
+	else if (type_hash == s_type_to_hash[std::type_index(typeid(AudioPlayer*))])
+		r = new AudioPlayer();
 	else {
 		r = nullptr;
 	}

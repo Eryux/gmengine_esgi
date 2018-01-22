@@ -29,6 +29,30 @@
                         {"name":"m_speed","value":6.0,"type":".M","instance":false},
                         {"name":"m_camera","value":2,"type":".PAVCamera@Engine@@","instance":true}
                     ]
+                },
+                {
+                    "type":".PAVAudioPlayer@Engine@@",
+                    "id":15,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_sound_file","value":"..\\Ressources\\Sounds\\explode.ogg","type":".STRING","instance":false},
+                        {"name":"m_sound_type","value":0,"type":".I","instance":false},
+                        {"name":"m_volume","value":50.0,"type":".M","instance":false},
+                        {"name":"m_loop","value":false,"type":"._N","instance":false},
+                        {"name":"m_autoplay","value":true,"type":"._N","instance":false}
+                    ]
+                },
+                {
+                    "type":".PAVAudioPlayer@Engine@@",
+                    "id":16,
+                    "enabled":true,
+                    "params": [
+                        {"name":"m_sound_file","value":"..\\Ressources\\Sounds\\level.ogg","type":".STRING","instance":false},
+                        {"name":"m_sound_type","value":1,"type":".I","instance":false},
+                        {"name":"m_volume","value":25.0,"type":".M","instance":false},
+                        {"name":"m_loop","value":true,"type":"._N","instance":false},
+                        {"name":"m_autoplay","value":true,"type":"._N","instance":false}
+                    ]
                 }
             ]
         },
