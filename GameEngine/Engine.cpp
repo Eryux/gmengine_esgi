@@ -88,7 +88,7 @@ void Core::Init()
 	SceneLoader::Init();
 
 	InitScene();
-	SceneLoader::LoadScene("..\\Ressources\\Scenes\\lvl_3.json");
+	SceneLoader::LoadScene("..\\Ressources\\Scenes\\lvl_math.json");
 }
 
 void Core::LoadScene(std::string path)
@@ -111,10 +111,14 @@ void Core::InitScene()
 
 	GameObject * math_obj = new GameObject("Math controller");
 
+	Renderer * math_renderer = new Renderer();
+
 	Math * math_component = new Math();
 	math_component->m_data_filename = "..\\Ressources\\surface_data.json";
+	math_component->m_renderer = math_renderer;
 	math_obj->addComponent(math_component);
-
+	
+	math_obj->addComponent(math_renderer);
 	m_gameObjects.push_back(math_obj);
 
 
@@ -156,7 +160,7 @@ void Core::Run()
 	deltaTimeClock.restart();
 
 	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_POLYGON_SMOOTH);
@@ -303,7 +307,7 @@ void Core::Run()
 	}
 
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 	glDisable(GL_POLYGON_SMOOTH);
 	glDisable(GL_TEXTURE_2D);

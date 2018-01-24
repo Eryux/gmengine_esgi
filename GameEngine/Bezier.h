@@ -20,6 +20,10 @@ namespace Engine {
 
 		model_t m_surface;
 
+		std::vector<GLfloat> vbo;
+
+		std::vector<GLuint> ibo;
+
 	public:
 
 		int m_subdivision[2] = { 2, 2 };
@@ -37,6 +41,8 @@ namespace Engine {
 		~Math();
 
 		void start();
+
+		void compileForOpenGL();
 
 		// IO
 

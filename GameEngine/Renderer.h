@@ -71,6 +71,7 @@ namespace Engine {
 		void SetShader(shader_t * s);
 		shader_t * GetShader();
 
+		static void AddModel(model_t * model);
 		static void CompileForOpenGL(std::string model_path);
 		static bool IsModelLoaded(std::string model_path);
 		static bool LoadModel(std::string model_path, std::string material_path);

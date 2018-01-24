@@ -32,6 +32,82 @@ void Math::start()
 	for (int i = 0; i < m_curve_points.size(); i++) {
 		std::cout << "x " << m_curve_points[i].x << " y " << m_curve_points[i].y << " z " << m_curve_points[i].z << std::endl;
 	}
+
+	// Renderer init
+
+	tinyobj::material_t mat;
+	mat.ambient[0] = 1.f; mat.ambient[1] = 1.f; mat.ambient[2] = 1.f;
+	mat.diffuse[0] = 1.f; mat.diffuse[1] = 1.f; mat.diffuse[2] = 1.f;
+	m_surface.materials.push_back(mat);
+
+	m_surface.name = "math_bz_surface";
+	Renderer::AddModel(&m_surface);
+	compileForOpenGL();
+
+	m_renderer->SetModel("math_bz_surface");
+	m_renderer->SetMaterial(0);
+	m_renderer->SetShader(Core::Get()->m_shaders.GetShader(0));
+}
+
+void Math::compileForOpenGL()
+{
+	for (int i = 0; i < m_subdivision[0] - 1; ++i)
+	{
+		for (int j = 0; j < m_subdivision[1] - 1; ++j)
+		{
+			// Square
+				glm::vec2 uv(0.f, 1.f);
+				glm::vec3 normal = glm::cross(m_curve_points[i * m_subdivision[1] + j], m_curve_points[(i + 1) * m_subdivision[1] + j]);
+				
+				// Triangle
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].x);
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].y);
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].z);
+				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(uv.x); vbo.push_back(uv.y);
+
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j].x);
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j].y);
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j].z);
+				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(uv.x); vbo.push_back(uv.y);
+
+				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].x);
+				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].y);
+				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].z);
+				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(uv.x); vbo.push_back(uv.y);
+
+				// Triangle
+				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].x);
+				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].y);
+				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].z);
+				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(uv.x); vbo.push_back(uv.y);
+
+				vbo.push_back(m_curve_points[i * (m_subdivision[1] + 1) + j].x);
+				vbo.push_back(m_curve_points[i * (m_subdivision[1] + 1) + j].y);
+				vbo.push_back(m_curve_points[i * (m_subdivision[1] + 1) + j].z);
+				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(uv.x); vbo.push_back(uv.y);
+
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].x);
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].y);
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].z);
+				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(uv.x); vbo.push_back(uv.y);
+
+			for (int i = 0; i < 6; ++i) {
+				ibo.push_back(vbo.size() - 6 + i);
+			}
+		}
+	}
+
+	m_surface.vertices_size = vbo.size();
+	m_surface.vertices = &vbo[0];
+	m_surface.indexes_size = ibo.size();
+	m_surface.indexes = &ibo[0];
+	m_surface.vbo_ibo_index = Core::Get()->CreateGLBuffer(m_surface.vertices, m_surface.indexes, m_surface.vertices_size, m_surface.indexes_size);
 }
 
 // Surface
@@ -49,7 +125,7 @@ void Math::surface_calc()
 			float v = (float)j / (float) m_precision;
 
 			std::vector<glm::vec3> q_points;
-			for (int q = 0; q <= m_subdivision[0]; q++) 
+			for (int q = 0; q < m_subdivision[0]; q++) 
 			{
 				std::vector<glm::vec3> line_points;
 				for (int z = 0; z < m_subdivision[1]; z++)
@@ -71,8 +147,8 @@ void Math::read_json_data(std::string filename)
 	nlohmann::json j; input_file >> j;
 
 	std::vector<int> j_size = j["size"].get<std::vector<int>>();
-	m_subdivision[0] = j_size[0];
-	m_subdivision[1] = j_size[1];
+	m_subdivision[0] = j_size[0] + 1;
+	m_subdivision[1] = j_size[1] + 1;
 
 	nlohmann::json j_points = j["control_points"];
 	for (auto points_it = j_points.begin(); points_it != j_points.end(); ++points_it)

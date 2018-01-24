@@ -99,6 +99,11 @@ bool Renderer::LoadModel(std::string model_path, std::string material_path) {
 	}
 }
 
+void Renderer::AddModel(model_t * model)
+{
+	s_models.push_back(model);
+}
+
 void Renderer::FreeModel(std::string model_path) {
 	model_t * model = nullptr;
 	for (int i = 0; i < Renderer::s_models.size(); i++) {
