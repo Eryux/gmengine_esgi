@@ -72,22 +72,22 @@ void Math::compileForOpenGL()
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
-				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].x);
-				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].y);
-				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].z);
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].x);
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].y);
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
 				// Triangle
-				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].x);
-				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].y);
-				vbo.push_back(m_curve_points[(i + 1) * (m_subdivision[1] + 1) + j].z);
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].x);
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].y);
+				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
-				vbo.push_back(m_curve_points[i * (m_subdivision[1] + 1) + j].x);
-				vbo.push_back(m_curve_points[i * (m_subdivision[1] + 1) + j].y);
-				vbo.push_back(m_curve_points[i * (m_subdivision[1] + 1) + j].z);
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j + 1].x);
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j + 1].y);
+				vbo.push_back(m_curve_points[i * m_subdivision[1] + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
@@ -98,7 +98,7 @@ void Math::compileForOpenGL()
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
 			for (int i = 0; i < 6; ++i) {
-				ibo.push_back(vbo.size() - 6 + i);
+				ibo.push_back(ibo.size());
 			}
 		}
 	}
