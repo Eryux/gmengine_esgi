@@ -234,7 +234,7 @@ void Core::Run()
 					wireframe = !wireframe;
 				}
 				if (event.key.code == sf::Keyboard::Key::F1 && event.type == sf::Event::KeyPressed) {
-					LoadScene("..\\Ressources\\Scenes\\main.json");
+					LoadScene("..\\Ressources\\Scenes\\lvl_math.json");
 				}
 				if (event.key.code == sf::Keyboard::Key::F2 && event.type == sf::Event::KeyPressed) {
 					LoadScene("..\\Ressources\\Scenes\\dragon.json");

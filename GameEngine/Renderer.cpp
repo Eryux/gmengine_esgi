@@ -137,7 +137,9 @@ void Renderer::FreeModelAll() {
 		model_t * model = Renderer::s_models[i];
 
 		if (model != nullptr) {
-			delete model->data;
+			if (model->data != nullptr)
+				delete model->data;
+
 			delete model;
 		}
 	}
