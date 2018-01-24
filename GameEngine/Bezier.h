@@ -32,7 +32,7 @@ namespace Engine {
 
 		std::string m_data_filename;
 
-		int m_precision = 3;
+		int m_precision = 20;
 
 		bool m_show_controlpoint = false;
 

@@ -119,6 +119,11 @@ void Core::InitScene()
 	math_obj->addComponent(math_component);
 	
 	math_obj->addComponent(math_renderer);
+
+	Transform * t = math_obj->getTransform();
+	t->setLocalSize(glm::vec3(20.f, 20.f, 20.f));
+	t->setLocalRotation(glm::radians(glm::vec3(0.f, 0.f, glm::radians(-180.f))));
+	t->setLocalPosition(glm::vec3(-10.f, -20.f, -10.f));
 	m_gameObjects.push_back(math_obj);
 
 

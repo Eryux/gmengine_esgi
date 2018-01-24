@@ -51,49 +51,52 @@ void Math::start()
 
 void Math::compileForOpenGL()
 {
-	for (int i = 0; i < m_subdivision[0] - 1; ++i)
+	int nb_row = m_precision + 1;
+	int nb_col = m_precision + 1;
+
+	for (int i = 0; i < nb_row - 1; ++i)
 	{
-		for (int j = 0; j < m_subdivision[1] - 1; ++j)
+		for (int j = 0; j < nb_col - 1; ++j)
 		{
 			// Square
 				glm::vec2 uv(0.f, 1.f);
-				glm::vec3 normal = glm::cross(m_curve_points[i * m_subdivision[1] + j], m_curve_points[(i + 1) * m_subdivision[1] + j]);
+				glm::vec3 normal = glm::cross(m_curve_points[i * nb_col + j], m_curve_points[(i + 1) * nb_col + j]);
 				
 				// Triangle
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].x);
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].y);
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].z);
+				vbo.push_back(m_curve_points[i * nb_col + j].x);
+				vbo.push_back(m_curve_points[i * nb_col + j].y);
+				vbo.push_back(m_curve_points[i * nb_col + j].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j].x);
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j].y);
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j].z);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j].x);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j].y);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].x);
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].y);
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].z);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].x);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].y);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
 				// Triangle
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].x);
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].y);
-				vbo.push_back(m_curve_points[(i + 1) * m_subdivision[1] + j + 1].z);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].x);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].y);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j + 1].x);
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j + 1].y);
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j + 1].z);
+				vbo.push_back(m_curve_points[i * nb_col + j + 1].x);
+				vbo.push_back(m_curve_points[i * nb_col + j + 1].y);
+				vbo.push_back(m_curve_points[i * nb_col + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].x);
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].y);
-				vbo.push_back(m_curve_points[i * m_subdivision[1] + j].z);
+				vbo.push_back(m_curve_points[i * nb_col + j].x);
+				vbo.push_back(m_curve_points[i * nb_col + j].y);
+				vbo.push_back(m_curve_points[i * nb_col + j].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
 				vbo.push_back(uv.x); vbo.push_back(uv.y);
 
@@ -149,6 +152,8 @@ void Math::read_json_data(std::string filename)
 	std::vector<int> j_size = j["size"].get<std::vector<int>>();
 	m_subdivision[0] = j_size[0] + 1;
 	m_subdivision[1] = j_size[1] + 1;
+
+	m_precision = j["precision"].get<int>();
 
 	nlohmann::json j_points = j["control_points"];
 	for (auto points_it = j_points.begin(); points_it != j_points.end(); ++points_it)
