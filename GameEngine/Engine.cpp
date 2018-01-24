@@ -6,6 +6,7 @@
 #include "SceneLoader.h"
 #include "Physic.h"
 #include "AudioPlayer.h"
+#include "Bezier.h"
 
 #include "MoveCamera_Component.h"
 #include "GUI_FPSCounter.h"
@@ -107,6 +108,15 @@ void Core::InitScene()
 	//SceneLoader::LoadScene("..\\Ressources\\Scenes\\dragon.json");
 
 	// ADDITIONAL SCENE OBJECT (DEBUG ONLY) ---------------------------------
+
+	GameObject * math_obj = new GameObject("Math controller");
+
+	Math * math_component = new Math();
+	math_component->m_data_filename = "..\\Ressources\\surface_data.json";
+	math_obj->addComponent(math_component);
+
+	m_gameObjects.push_back(math_obj);
+
 
 	// FPS Counter
 	/*GameObject * fpsc_obj = new GameObject("fpscounter");
