@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <fstream>
+#include "Texture.h"
+
 
 using namespace Engine;
 
@@ -40,9 +42,15 @@ void Math::start()
 	mat.diffuse[0] = 1.f; mat.diffuse[1] = 1.f; mat.diffuse[2] = 1.f;
 	m_surface.materials.push_back(mat);
 
+    
+
 	m_surface.name = "math_bz_surface";
 	Renderer::AddModel(&m_surface);
 	compileForOpenGL();
+
+
+    m_renderer->SetTexture(Texture::LoadTexture("../Ressources/Textures/checker.png"));
+
 
 	m_renderer->SetModel("math_bz_surface");
 	m_renderer->SetMaterial(0);
@@ -59,46 +67,48 @@ void Math::compileForOpenGL()
 		for (int j = 0; j < nb_col - 1; ++j)
 		{
 			// Square
-				glm::vec2 uv(0.f, 1.f);
-				glm::vec3 normal = glm::cross(m_curve_points[i * nb_col + j], m_curve_points[(i + 1) * nb_col + j]);
-				
-				// Triangle
-				vbo.push_back(m_curve_points[i * nb_col + j].x);
+            glm::vec2 uv(0.f, 1.f);
+            //glm::vec2 uv(float(i) / float(nb_col-1), float(j) / float(nb_col - 1));
+				glm::vec3 normal = glm::cross(m_curve_points[(i + 1) * nb_col + j] - m_curve_points[i * nb_col + j], m_curve_points[i * nb_col + j] - m_curve_points[(i + 1) * nb_col + j + 1]);
+                glm::normalize(normal);
+
+                // Triangle
+				vbo.push_back(m_curve_points[i * nb_col + j].x);//A
 				vbo.push_back(m_curve_points[i * nb_col + j].y);
 				vbo.push_back(m_curve_points[i * nb_col + j].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
-				vbo.push_back(uv.x); vbo.push_back(uv.y);
+				vbo.push_back(0); vbo.push_back(0);
 
-				vbo.push_back(m_curve_points[(i + 1) * nb_col + j].x);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j].x);//D
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j].y);
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
-				vbo.push_back(uv.x); vbo.push_back(uv.y);
+				vbo.push_back(1); vbo.push_back(0);
 
-				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].x);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].x);//C
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].y);
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
-				vbo.push_back(uv.x); vbo.push_back(uv.y);
+				vbo.push_back(1); vbo.push_back(1);
 
 				// Triangle
-				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].x);
+				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].x);//C
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].y);
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
-				vbo.push_back(uv.x); vbo.push_back(uv.y);
+				vbo.push_back(1); vbo.push_back(1);
 
-				vbo.push_back(m_curve_points[i * nb_col + j + 1].x);
+				vbo.push_back(m_curve_points[i * nb_col + j + 1].x);//B
 				vbo.push_back(m_curve_points[i * nb_col + j + 1].y);
 				vbo.push_back(m_curve_points[i * nb_col + j + 1].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
-				vbo.push_back(uv.x); vbo.push_back(uv.y);
+				vbo.push_back(0); vbo.push_back(1);
 
-				vbo.push_back(m_curve_points[i * nb_col + j].x);
+				vbo.push_back(m_curve_points[i * nb_col + j].x);//A
 				vbo.push_back(m_curve_points[i * nb_col + j].y);
 				vbo.push_back(m_curve_points[i * nb_col + j].z);
 				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
-				vbo.push_back(uv.x); vbo.push_back(uv.y);
+				vbo.push_back(0); vbo.push_back(0);
 
 			for (int i = 0; i < 6; ++i) {
 				ibo.push_back(ibo.size());
