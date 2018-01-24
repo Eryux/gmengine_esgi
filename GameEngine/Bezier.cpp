@@ -34,25 +34,19 @@ void Math::start()
 	mat.diffuse[0] = 1.f; mat.diffuse[1] = 1.f; mat.diffuse[2] = 1.f;
 	m_surface->materials.push_back(mat);
 
-<<<<<<< HEAD
-    
 
-	m_surface.name = "math_bz_surface";
-	Renderer::AddModel(&m_surface);
-=======
 	m_surface->name = "math_bz_surface";
 	Renderer::AddModel(m_surface);
->>>>>>> 119c51d8a84c3040ae38e88270c23cc321f0c5fc
 	compileForOpenGL();
 
 
-    m_renderer->SetTexture(Texture::LoadTexture("../Ressources/Textures/checker.png"));
+    //m_renderer->SetTexture(Texture::LoadTexture("../Ressources/Textures/checker.png"));
+    //m_renderer->SetTexture(Texture::LoadTexture("..\\Ressources\\Textures\\tile.png"));
 
 
 	m_renderer->SetModel("math_bz_surface");
 	m_renderer->SetMaterial(0);
 	m_renderer->SetShader(Core::Get()->m_shaders.GetShader(0));
-	m_renderer->SetTexture(Texture::LoadTexture("..\\Ressources\\Textures\\tile.png"));
 }
 
 void Math::compileForOpenGL()
@@ -68,7 +62,11 @@ void Math::compileForOpenGL()
             glm::vec2 uv(0.f, 1.f);
             //glm::vec2 uv(float(i) / float(nb_col-1), float(j) / float(nb_col - 1));
 				glm::vec3 normal = glm::cross(m_curve_points[(i + 1) * nb_col + j] - m_curve_points[i * nb_col + j], m_curve_points[i * nb_col + j] - m_curve_points[(i + 1) * nb_col + j + 1]);
-                glm::normalize(normal);
+            //glm::vec3 normal = glm::cross(m_curve_points[i * nb_col + j], m_curve_points[(i + 1) * nb_col + j]);
+            glm::normalize(normal);
+
+                glm::vec3 normal2 = glm::cross(m_curve_points[(i + 1) * nb_col + j + 1] - m_curve_points[i * nb_col + j + 1], m_curve_points[(i + 1) * nb_col + j + 1] - m_curve_points[i * nb_col + j]);
+                glm::normalize(normal2);
 
                 // Triangle
 				vbo.push_back(m_curve_points[i * nb_col + j].x);//A
@@ -93,19 +91,19 @@ void Math::compileForOpenGL()
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].x);//C
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].y);
 				vbo.push_back(m_curve_points[(i + 1) * nb_col + j + 1].z);
-				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(normal2.x); vbo.push_back(normal2.y); vbo.push_back(normal2.z);
 				vbo.push_back(1); vbo.push_back(1);
 
 				vbo.push_back(m_curve_points[i * nb_col + j + 1].x);//B
 				vbo.push_back(m_curve_points[i * nb_col + j + 1].y);
 				vbo.push_back(m_curve_points[i * nb_col + j + 1].z);
-				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(normal2.x); vbo.push_back(normal2.y); vbo.push_back(normal2.z);
 				vbo.push_back(0); vbo.push_back(1);
 
 				vbo.push_back(m_curve_points[i * nb_col + j].x);//A
 				vbo.push_back(m_curve_points[i * nb_col + j].y);
 				vbo.push_back(m_curve_points[i * nb_col + j].z);
-				vbo.push_back(normal.x); vbo.push_back(normal.y); vbo.push_back(normal.z);
+				vbo.push_back(normal2.x); vbo.push_back(normal2.y); vbo.push_back(normal2.z);
 				vbo.push_back(0); vbo.push_back(0);
 
 			for (int i = 0; i < 6; ++i) {
@@ -142,10 +140,10 @@ void Math::surface_calc()
 				for (int z = 0; z < m_subdivision[1]; z++)
 					line_points.push_back(m_control_points[q * m_subdivision[1] + z]);
 
-				q_points.push_back(de_castle_jau(line_points, m_subdivision[1], v));
+				q_points.push_back(de_castle_jau(line_points, v));
 			}
 
-			m_curve_points.push_back(de_castle_jau(q_points, m_subdivision[0], u));
+			m_curve_points.push_back(de_castle_jau(q_points, u));
 		}
 	}
 }
@@ -192,22 +190,19 @@ float Math::bernstein(int i, int n, int t)
 	return r;
 }
 
-glm::vec3 Math::de_castle_jau(std::vector<glm::vec3> points, int degree, float t)
+glm::vec3 Math::de_castle_jau(std::vector<glm::vec3> points, float t)
 {
-	std::vector<glm::vec3> q_points;
-	for (int j = 0; j < degree; j++) { q_points.push_back(points[j]); }
-
-	for (int k = 1; k <= degree; k++)
+	for (int k = 1; k <= points.size(); k++)
 	{
-		for (int j = 0; j < degree - k; j++)
+		for (int j = 0; j < points.size() - k; j++)
 		{
-			q_points[j] = glm::vec3(
-				(1 - t) * q_points[j].x + t * q_points[j + 1].x,
-				(1 - t) * q_points[j].y + t * q_points[j + 1].y,
-				(1 - t) * q_points[j].z + t * q_points[j + 1].z
+            points[j] = glm::vec3(
+				(1 - t) * points[j].x + t * points[j + 1].x,
+				(1 - t) * points[j].y + t * points[j + 1].y,
+				(1 - t) * points[j].z + t * points[j + 1].z
 			);
 		}
 	}
 
-	return glm::vec3(q_points[0].x, q_points[0].y, q_points[0].z);
+	return glm::vec3(points[0].x, points[0].y, points[0].z);
 }

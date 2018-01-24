@@ -61,7 +61,7 @@ namespace Engine {
 
 		float bernstein(int i, int n, int t);
 
-		glm::vec3 de_castle_jau(std::vector<glm::vec3> points, int degree, float t);
+		glm::vec3 de_castle_jau(std::vector<glm::vec3> points, float t);
 
 	};
 
