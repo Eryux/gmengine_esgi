@@ -18,7 +18,7 @@ namespace Engine {
 
 		std::vector<glm::vec3> m_curve_points;
 
-		model_t m_surface;
+		model_t * m_surface;
 
 		std::vector<GLfloat> vbo;
 

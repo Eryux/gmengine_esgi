@@ -1,4 +1,5 @@
 #include "Bezier.h"
+#include "Texture.h"
 
 #include "json.h"
 
@@ -22,30 +23,26 @@ Math::~Math()
 void Math::start()
 {
 	read_json_data(m_data_filename);
-
-	std::cout << "Control points -----------------" << std::endl;
-	for (int i = 0; i < m_control_points.size(); i++) {
-		std::cout << "x " << m_control_points[i].x << " y " << m_control_points[i].y << " z " << m_control_points[i].z << std::endl;
-	}
 	
 	surface_calc();
 
-	std::cout << "Curve points -----------------" << std::endl;
-	for (int i = 0; i < m_curve_points.size(); i++) {
-		std::cout << "x " << m_curve_points[i].x << " y " << m_curve_points[i].y << " z " << m_curve_points[i].z << std::endl;
-	}
-
 	// Renderer init
+	m_surface = new model_t();
 
 	tinyobj::material_t mat;
 	mat.ambient[0] = 1.f; mat.ambient[1] = 1.f; mat.ambient[2] = 1.f;
 	mat.diffuse[0] = 1.f; mat.diffuse[1] = 1.f; mat.diffuse[2] = 1.f;
-	m_surface.materials.push_back(mat);
+	m_surface->materials.push_back(mat);
 
+<<<<<<< HEAD
     
 
 	m_surface.name = "math_bz_surface";
 	Renderer::AddModel(&m_surface);
+=======
+	m_surface->name = "math_bz_surface";
+	Renderer::AddModel(m_surface);
+>>>>>>> 119c51d8a84c3040ae38e88270c23cc321f0c5fc
 	compileForOpenGL();
 
 
@@ -55,6 +52,7 @@ void Math::start()
 	m_renderer->SetModel("math_bz_surface");
 	m_renderer->SetMaterial(0);
 	m_renderer->SetShader(Core::Get()->m_shaders.GetShader(0));
+	m_renderer->SetTexture(Texture::LoadTexture("..\\Ressources\\Textures\\tile.png"));
 }
 
 void Math::compileForOpenGL()
@@ -116,11 +114,11 @@ void Math::compileForOpenGL()
 		}
 	}
 
-	m_surface.vertices_size = vbo.size();
-	m_surface.vertices = &vbo[0];
-	m_surface.indexes_size = ibo.size();
-	m_surface.indexes = &ibo[0];
-	m_surface.vbo_ibo_index = Core::Get()->CreateGLBuffer(m_surface.vertices, m_surface.indexes, m_surface.vertices_size, m_surface.indexes_size);
+	m_surface->vertices_size = vbo.size();
+	m_surface->vertices = &vbo[0];
+	m_surface->indexes_size = ibo.size();
+	m_surface->indexes = &ibo[0];
+	m_surface->vbo_ibo_index = Core::Get()->CreateGLBuffer(m_surface->vertices, m_surface->indexes, m_surface->vertices_size, m_surface->indexes_size);
 }
 
 // Surface
