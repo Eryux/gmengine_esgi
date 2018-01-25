@@ -8,6 +8,8 @@
 #include "Component.h"
 #include "Physic.h"
 
+#include "Quat.h"
+
 namespace Engine {
 
 	class Transform : public Component {
@@ -21,6 +23,8 @@ namespace Engine {
 		glm::vec3 m_localSize;
 
 		glm::quat m_localRotation;
+
+		Quat m_localRotation_c;
 
 		Transform();
 

@@ -13,24 +13,28 @@ Transform::Transform() {
 	m_localPosition = { 0.f, 0.f, 0.f };
 	m_localSize = { 1.f, 1.f, 1.f };
 	m_localRotation = { 0.f, 0.f, 0.f, 1.f };
+	//m_localRotation_c = Quat(0.f, 0.f, 0.f, 1.f);
 }
 
 Transform::Transform(glm::vec3 pos) {
 	m_localPosition = pos;
 	m_localSize = { 1.f, 1.f, 1.f };
 	m_localRotation = { 0.f, 0.f, 0.f, 1.f };
+	//m_localRotation_c = Quat(0.f, 0.f, 0.f, 1.f);
 }
 
 Transform::Transform(glm::vec3 pos, glm::vec3 size) {
 	m_localPosition = pos;
 	m_localSize = size;
 	m_localRotation = { 0.f, 0.f, 0.f, 1.f };
+	//m_localRotation_c = Quat(0.f, 0.f, 0.f, 1.f);
 }
 
 Transform::Transform(glm::vec3 pos, glm::vec3 size, glm::vec3 rot) {
 	m_localPosition = pos;
 	m_localSize = size;
 	m_localRotation = rot;
+	//m_localRotation_c = Quat(0.f, glm::vec3(rot.x, rot.y, rot.z));
 }
 
 // Position
@@ -53,10 +57,12 @@ void Transform::translate(glm::vec3 offset) {
 // Rotation
 void Transform::setLocalRotation(glm::quat rot) {
 	m_localRotation = rot;
+	m_localRotation_c = Quat(rot.x, rot.y, rot.z, rot.w);
 }
 
 void Transform::setLocalRotation(glm::vec3 rot) {
 	m_localRotation = glm::quat(rot);
+	m_localRotation_c = Quat(m_localRotation.x, m_localRotation.y, m_localRotation.z, m_localRotation.w);
 }
 
 glm::quat Transform::getLocalRotation() {
@@ -105,6 +111,7 @@ glm::mat4 Transform::getWorlMatrix() {
 	glm::mat4 t_mat = glm::translate(glm::mat4(), m_localPosition);
 	glm::mat4 s_mat = glm::scale(m_localSize);
 	glm::mat4 r_mat = glm::mat4_cast(m_localRotation);
+	//glm::mat4 r_mat = m_localRotation_c.to_mat(&m_localRotation_c);
 	return t_mat * r_mat * s_mat;
 }
 

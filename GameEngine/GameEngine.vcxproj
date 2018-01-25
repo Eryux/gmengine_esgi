@@ -146,6 +146,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MoveCamera_Component.cpp" />
     <ClCompile Include="Physic.cpp" />
+    <ClCompile Include="Quat.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SceneLoader.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Level_3.h" />
     <ClInclude Include="MoveCamera_Component.h" />
     <ClInclude Include="Physic.h" />
+    <ClInclude Include="Quat.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SceneLoader.h" />
