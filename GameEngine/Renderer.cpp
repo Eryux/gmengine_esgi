@@ -150,6 +150,13 @@ bool Engine::Renderer::LoadModelFBX(std::string model_path)
 	FbxNode * root = m_fbxscene->GetRootNode();
 	ProcessNode(root, nullptr, model);
 
+	// Material -----------------------------------------------------
+
+	tinyobj::material_t mat;
+	mat.ambient[0] = 1.f; mat.ambient[1] = 1.f; mat.ambient[2] = 1.f;
+	mat.diffuse[0] = 1.f; mat.diffuse[1] = 1.f; mat.diffuse[2] = 1.f;
+	model->materials.push_back(mat);
+
 	return true;
 
 	
@@ -165,6 +172,49 @@ void Renderer::ProcessNode(FbxNode * node, FbxNode * parent, model_t * model)
 		switch (type) {
 		case FbxNodeAttribute::eMesh:
 			Renderer::CompileForOpenGLFBX(node->GetMesh(), model);
+			
+			tinyobj::material_t mat;
+			mat.ambient[0] = 1.f; mat.ambient[1] = 1.f; mat.ambient[2] = 1.f;
+			mat.diffuse[0] = 1.f; mat.diffuse[1] = 1.f; mat.diffuse[2] = 1.f;
+			
+			FbxSurfaceMaterial * fbxmat = node->GetMaterial(0);
+			
+			const FbxProperty diffuse = fbxmat->FindProperty(FbxSurfaceMaterial::sDiffuse);
+			const FbxProperty fdiffuse = fbxmat->FindProperty(FbxSurfaceMaterial::sDiffuseFactor);
+			
+			const FbxProperty ambiant = fbxmat->FindProperty(FbxSurfaceMaterial::sAmbient);
+			const FbxProperty fambiant = fbxmat->FindProperty(FbxSurfaceMaterial::sAmbientFactor);
+
+			if (diffuse.IsValid()) {
+				FbxDouble3 color = diffuse.Get<FbxDouble3>();
+				if (fdiffuse.IsValid()) {
+					double factor = fdiffuse.Get<FbxDouble>();
+					mat.diffuse[0] = color[0] * factor;
+					mat.diffuse[1] = color[1] * factor;
+					mat.diffuse[2] = color[2] * factor;
+				}
+
+				const int textcount = diffuse.GetSrcObjectCount<FbxFileTexture>();
+				if (textcount > 0) {
+					const FbxFileTexture * fbxtext = diffuse.GetSrcObject<FbxFileTexture>(0);
+					if (fbxtext) {
+						int text = Texture::LoadTexture(fbxtext->GetFileName());
+						SetTexture(text);
+					}
+				}
+			}
+
+			if (ambiant.IsValid()) {
+				FbxDouble3 color = ambiant.Get<FbxDouble3>();
+				if (fambiant.IsValid()) {
+					double factor = fdiffuse.Get<FbxDouble>();
+					mat.ambient[0] = color[0] * factor;
+					mat.ambient[1] = color[1] * factor;
+					mat.ambient[2] = color[2] * factor;
+				}
+			}
+			
+			model->materials.push_back(mat);
 			break;
 		}
 	}
@@ -343,11 +393,6 @@ void Engine::Renderer::CompileForOpenGLFBX(FbxMesh * mesh, model_t * model)
 	model->indexes = indexes->data();
 
 	model->vbo_ibo_index = Core::Get()->CreateGLBuffer(model->vertices, model->indexes, model->vertices_size, model->indexes_size);
-
-	tinyobj::material_t mat;
-	mat.ambient[0] = 1.f; mat.ambient[1] = 1.f; mat.ambient[2] = 1.f;
-	mat.diffuse[0] = 1.f; mat.diffuse[1] = 1.f; mat.diffuse[2] = 1.f;
-	model->materials.push_back(mat);
 }
 
 void Renderer::SetModel(std::string model_path, bool isfbx) {
