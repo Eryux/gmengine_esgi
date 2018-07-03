@@ -117,7 +117,8 @@ void Core::InitScene()
 	ironman_obj->addComponent(ironman_renderer);
 
 	Transform * t = ironman_obj->getTransform();
-	t->setLocalSize(glm::vec3(10.f, 10.f, 10.f));
+	t->setLocalSize(glm::vec3(5.f, 5.f, 5.f));
+	t->setLocalRotation(glm::vec3(glm::radians(-90.f), glm::radians(180.f), 0.f));
 	m_gameObjects.push_back(ironman_obj);
 
 	/*GameObject * math_obj = new GameObject("Math controller");

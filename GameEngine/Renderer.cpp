@@ -143,6 +143,17 @@ bool Engine::Renderer::LoadModelFBX(std::string model_path)
 		std::cerr << "[ERROR] Renderer - Unable to load model : " << model_path << std::endl;
 		return false;
 	}
+
+	FbxAxisSystem scaxissystem = m_fbxscene->GetGlobalSettings().GetAxisSystem();
+	FbxAxisSystem ouraxissystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
+	if (scaxissystem != ouraxissystem) {
+		ouraxissystem.ConvertScene(m_fbxscene);
+	}
+
+	FbxSystemUnit scsystemunit = m_fbxscene->GetGlobalSettings().GetSystemUnit();
+	if (scsystemunit != FbxSystemUnit::cm) {
+		std::cout << "System unit not in cm !" << std::endl;
+	}
 	
 	model->name = model_path;
 	Renderer::s_models.push_back(model);
