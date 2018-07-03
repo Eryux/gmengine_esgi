@@ -109,7 +109,18 @@ void Core::InitScene()
 
 	// ADDITIONAL SCENE OBJECT (DEBUG ONLY) ---------------------------------
 
-	GameObject * math_obj = new GameObject("Math controller");
+	GameObject * ironman_obj = new GameObject("Ironman");
+	
+	Renderer * ironman_renderer = new Renderer("..\\Ressources\\Models\\ironman\\ironman.fbx", true);
+	ironman_renderer->SetMaterial(0);
+	ironman_renderer->SetShader(Core::Get()->m_shaders.GetShader(0));
+	ironman_obj->addComponent(ironman_renderer);
+
+	Transform * t = ironman_obj->getTransform();
+	t->setLocalSize(glm::vec3(10.f, 10.f, 10.f));
+	m_gameObjects.push_back(ironman_obj);
+
+	/*GameObject * math_obj = new GameObject("Math controller");
 
 	Renderer * math_renderer = new Renderer();
 
@@ -124,7 +135,7 @@ void Core::InitScene()
 	t->setLocalSize(glm::vec3(20.f, 20.f, 20.f));
 	t->setLocalRotation(glm::radians(glm::vec3(0.f, 0.f, glm::radians(-180.f))));
 	t->setLocalPosition(glm::vec3(-10.f, -20.f, -10.f));
-	m_gameObjects.push_back(math_obj);
+	m_gameObjects.push_back(math_obj);*/
 
 
 	// FPS Counter

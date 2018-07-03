@@ -6679,7 +6679,7 @@ class serializer
     void dump_float(number_float_t x)
     {
         // NaN / inf
-        if (not std::isfinite(x) or std::isnan(x))
+        if (not std::isfinite(x))
         {
             o->write_characters("null", 4);
             return;

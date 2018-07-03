@@ -13,6 +13,7 @@
 #endif
 
 #include <SFML/OpenGL.hpp>
+#include <fbxsdk.h>
 
 #include "tiny_obj_loader.h"
 
@@ -59,6 +60,12 @@ namespace Engine {
 
 		Core * m_core = nullptr;
 
+		FbxManager * m_fbxmanager = nullptr;
+
+		FbxScene * m_fbxscene = nullptr;
+
+		bool m_isfbx = false;
+
 	public:
 		static int s_LAMBERT_SHADER;
 
@@ -66,19 +73,29 @@ namespace Engine {
 
 		Renderer();
 		Renderer(std::string model_path);
+		Renderer(std::string model_path, bool isfbx);
 		Renderer(std::string model_path, std::string material_path);
+
+		void Initialize();
 
 		void SetShader(shader_t * s);
 		shader_t * GetShader();
 
 		static void AddModel(model_t * model);
+
 		static void CompileForOpenGL(std::string model_path);
+		static void CompileForOpenGLFBX(FbxMesh * mesh, model_t * model);
+
 		static bool IsModelLoaded(std::string model_path);
+		
 		static bool LoadModel(std::string model_path, std::string material_path);
+		bool LoadModelFBX(std::string model_path);
+		void ProcessNode(FbxNode * node, FbxNode * parent, model_t * model);
+		
 		static void FreeModel(std::string model_path);
 		static void FreeModelAll();
 
-		void SetModel(std::string model_path);
+		void SetModel(std::string model_path, bool isfbx = false);
 
 		void SetMaterial(int i);
 		tinyobj::material_t * GetMaterial(int i);

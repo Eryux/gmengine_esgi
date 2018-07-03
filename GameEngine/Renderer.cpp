@@ -8,6 +8,7 @@
 #include "gtc\matrix_transform.hpp"
 #include "gtc\type_ptr.hpp"
 
+//#include <fbxsdk\fileio\fbxiosettingspath.h>
 #include <iostream>
 
 using namespace Engine;
@@ -24,16 +25,31 @@ Renderer::Renderer() {
 
 	m_model_name = "";
 	m_material_path = "";
+	Initialize();
 }
 
 Renderer::Renderer(std::string model_path) {
 	m_model_name = model_path;
 	m_material_path = "..\\Ressources";
+	Initialize();
+}
+
+Renderer::Renderer(std::string model_path, bool isfbx) {
+	m_model_name = model_path;
+	m_isfbx = isfbx;
+	Initialize();
 }
 
 Renderer::Renderer(std::string model_path, std::string material_path) {
 	m_model_name = model_path;
 	m_material_path = material_path;
+	Initialize();
+}
+
+void Renderer::Initialize() {
+	m_fbxmanager = FbxManager::Create();
+	FbxIOSettings * ioSettings = FbxIOSettings::Create(m_fbxmanager, IOSROOT);
+	m_fbxmanager->SetIOSettings(ioSettings);
 }
 
 void Renderer::start() {
@@ -44,8 +60,13 @@ void Renderer::start() {
 		m_shader = m_core->m_shaders.GetShader(m_shader_id);
 	}
 
-	if (m_model_name != "")
-		Renderer::LoadModel(m_model_name, m_material_path);
+	if (m_model_name != "") {
+		if (m_isfbx)
+			LoadModelFBX(m_model_name);
+		else
+			Renderer::LoadModel(m_model_name, m_material_path);
+	}
+		
 
 	m_model = GetModel();
 
@@ -59,6 +80,11 @@ void Renderer::start() {
 
 void Renderer::remove() {
 	Core::Get()->RemoveRenderer(this);
+	
+	if (m_fbxscene != nullptr)
+		m_fbxscene->Destroy();
+
+	m_fbxmanager->Destroy();
 }
 
 void Renderer::SetShader(shader_t * s) { m_shader = s; }
@@ -96,6 +122,57 @@ bool Renderer::LoadModel(std::string model_path, std::string material_path) {
 		std::cerr << "[ERROR] Renderer - Unable to load model : " << model_path << std::endl;
 		std::cerr << err_load << std::endl;
 		return false;
+	}
+}
+
+bool Engine::Renderer::LoadModelFBX(std::string model_path)
+{
+	if (Renderer::IsModelLoaded(model_path)) return true;
+
+	model_t * model = new model_t();
+
+	m_fbxscene = FbxScene::Create(m_fbxmanager, model_path.c_str());
+	FbxImporter * importer = FbxImporter::Create(m_fbxmanager, "");
+	bool status = importer->Initialize(model_path.c_str(), -1, m_fbxmanager->GetIOSettings());
+	status = importer->Import(m_fbxscene);
+	importer->Destroy();
+
+	if (!status) {
+		delete model->data;
+		delete model;
+		std::cerr << "[ERROR] Renderer - Unable to load model : " << model_path << std::endl;
+		return false;
+	}
+	
+	model->name = model_path;
+	Renderer::s_models.push_back(model);
+
+	FbxNode * root = m_fbxscene->GetRootNode();
+	ProcessNode(root, nullptr, model);
+
+	return true;
+
+	
+}
+
+void Renderer::ProcessNode(FbxNode * node, FbxNode * parent, model_t * model) 
+{
+	FbxNodeAttribute * att = node->GetNodeAttribute();
+	
+	if (att != nullptr) {
+		FbxNodeAttribute::EType type = att->GetAttributeType();
+
+		switch (type) {
+		case FbxNodeAttribute::eMesh:
+			Renderer::CompileForOpenGLFBX(node->GetMesh(), model);
+			break;
+		}
+	}
+
+	int childcount = node->GetChildCount();
+	for (int i = 0; i < childcount; i++) {
+		FbxNode * child = node->GetChild(i);
+		ProcessNode(child, node, model);
 	}
 }
 
@@ -208,9 +285,79 @@ void Renderer::CompileForOpenGL(std::string model_path) {
 	model->indexes = indexes->data();
 }
 
-void Renderer::SetModel(std::string model_path) {
+void Engine::Renderer::CompileForOpenGLFBX(FbxMesh * mesh, model_t * model)
+{
+	if (!mesh->IsTriangleMesh()) return;
+
+	std::vector<GLfloat> * vertices = new std::vector<GLfloat>();
+	std::vector<GLuint> * indexes = new std::vector<GLuint>();
+
+	int polycount = mesh->GetPolygonCount();
+	for (int p = 0; p < polycount; p++) 
+	{
+		int vertexcount = mesh->GetPolygonSize(p);
+
+		for (int v = 0; v < vertexcount; v++) 
+		{
+			int id = mesh->GetPolygonVertex(p, v);
+
+			FbxVector4 position = mesh->GetControlPointAt(id);
+			vertices->push_back((float)position.mData[0]);
+			vertices->push_back((float)position.mData[1]);
+			vertices->push_back((float)position.mData[2]);
+
+			FbxVector4 normal;
+			mesh->GetPolygonVertexNormal(p, v, normal);
+			vertices->push_back((float)normal.mData[0]);
+			vertices->push_back((float)normal.mData[1]);
+			vertices->push_back((float)normal.mData[2]);
+
+			FbxStringList nameListUV;
+			mesh->GetUVSetNames(nameListUV);
+
+			int channelcount = nameListUV.GetCount();
+			for (int c = 0; c < channelcount; c++) {
+				const char * nameUV = nameListUV.GetStringAt(c);
+
+				FbxVector2 uv; bool isunmapped;
+				bool hasUV = mesh->GetPolygonVertexUV(p, v, nameUV, uv, isunmapped);
+				if (hasUV) {
+					vertices->push_back((float)uv.mData[0]);
+					vertices->push_back((float)uv.mData[1]);
+				}
+				else {
+					vertices->push_back(0.0f);
+					vertices->push_back(1.0f);
+				}
+
+				break;
+			}
+
+			indexes->push_back(indexes->size());
+		}
+	}
+
+	model->vertices_size = vertices->size();
+	model->vertices = vertices->data();
+	model->indexes_size = indexes->size();
+	model->indexes = indexes->data();
+
+	model->vbo_ibo_index = Core::Get()->CreateGLBuffer(model->vertices, model->indexes, model->vertices_size, model->indexes_size);
+
+	tinyobj::material_t mat;
+	mat.ambient[0] = 1.f; mat.ambient[1] = 1.f; mat.ambient[2] = 1.f;
+	mat.diffuse[0] = 1.f; mat.diffuse[1] = 1.f; mat.diffuse[2] = 1.f;
+	model->materials.push_back(mat);
+}
+
+void Renderer::SetModel(std::string model_path, bool isfbx) {
 	m_model_name = model_path;
-	Renderer::LoadModel(m_model_name, m_material_path);
+	m_isfbx = isfbx;
+
+	if (m_isfbx)
+		LoadModelFBX(m_model_name);
+	else
+		Renderer::LoadModel(m_model_name, m_material_path);
 }
 
 void Renderer::SetMaterial(int i) { m_material_id = i; }
