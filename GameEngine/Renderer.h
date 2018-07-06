@@ -22,6 +22,28 @@ namespace Engine {
 	class Core;
 
 	typedef struct {
+		std::string name;
+		FbxNode * node;
+	} bone_t;
+
+	typedef struct {
+		std::vector<bone_t> bones;
+	} skeleton_t;
+
+	typedef struct {
+		std::vector<glm::mat4> joints;
+	} frame_t;
+
+	typedef struct {
+		std::vector<frame_t> keyframes;
+	} anim_t;
+
+	typedef struct {
+		std::vector<int> jointIndex;
+		std::vector<float> weights;
+	} deformer_t;
+
+	typedef struct {
 		GLfloat * vertices = nullptr;
 		GLuint * indexes = nullptr;
 
@@ -35,6 +57,14 @@ namespace Engine {
 		tinyobj::attrib_t * data = nullptr;
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
+
+		skeleton_t * skeleton;
+		std::vector<glm::mat4> bindPose;
+		std::vector<deformer_t> influences;
+		FbxTimeSpan * interval;
+
+		anim_t * animations = nullptr;
+		bool hasAnim = false;
 	} model_t;
 
 	class Renderer : public Component {
@@ -91,7 +121,9 @@ namespace Engine {
 		static bool LoadModel(std::string model_path, std::string material_path);
 		bool LoadModelFBX(std::string model_path);
 		void ProcessNode(FbxNode * node, FbxNode * parent, model_t * model);
-		
+		void ProcessSkeleton(FbxNode * node, FbxNode * parent, skeleton_t * skeleton);
+		void ProcessSkinning(FbxMesh * mesh, model_t * model);
+
 		static void FreeModel(std::string model_path);
 		static void FreeModelAll();
 

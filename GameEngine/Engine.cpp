@@ -30,6 +30,8 @@ using namespace Engine;
 
 int g_LAMBER_SHADER = -1;
 
+int g_LAMBER_ANIM_SHADER = -1;
+
 void Core::AddRenderer(Renderer *r) 
 {
 	m_renderers.push_back(r);
@@ -75,6 +77,7 @@ void Core::Init()
 
 	// Load Shaders ----------------------
 	g_LAMBER_SHADER = m_shaders.LoadShader("..\\Ressources\\Shaders\\lambert.vs", "..\\Ressources\\Shaders\\lambert.fs");
+	g_LAMBER_ANIM_SHADER = m_shaders.LoadShader("..\\Ressources\\Shaders\\anim.vs", "..\\Ressources\\Shaders\\anim.fs");
 	int skybox_shader = m_shaders.LoadShader("..\\Ressources\\Shaders\\skybox.vs", "..\\Ressources\\Shaders\\skybox.fs");
 
 	// Create skybox
@@ -111,13 +114,14 @@ void Core::InitScene()
 
 	GameObject * ironman_obj = new GameObject("Ironman");
 	
-	Renderer * ironman_renderer = new Renderer("..\\Ressources\\Models\\ironman\\ironman.fbx", true);
+	Renderer * ironman_renderer = new Renderer("..\\Ressources\\Models\\ThirdPersonWalk.fbx", true);
 	ironman_renderer->SetMaterial(0);
-	ironman_renderer->SetShader(Core::Get()->m_shaders.GetShader(0));
+	ironman_renderer->SetShader(m_shaders.GetShader(g_LAMBER_ANIM_SHADER));
+	//ironman_renderer->SetShader(Core::Get()->m_shaders.GetShader(0));
 	ironman_obj->addComponent(ironman_renderer);
 
 	Transform * t = ironman_obj->getTransform();
-	t->setLocalSize(glm::vec3(5.f, 5.f, 5.f));
+	t->setLocalSize(glm::vec3(0.1f, 0.1f, 0.1f));
 	t->setLocalRotation(glm::vec3(glm::radians(-90.f), glm::radians(180.f), 0.f));
 	m_gameObjects.push_back(ironman_obj);
 

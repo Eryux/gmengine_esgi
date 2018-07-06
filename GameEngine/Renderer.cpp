@@ -159,6 +159,27 @@ bool Engine::Renderer::LoadModelFBX(std::string model_path)
 	Renderer::s_models.push_back(model);
 
 	FbxNode * root = m_fbxscene->GetRootNode();
+
+	skeleton_t * skeleton = new skeleton_t;
+
+	FbxTimeSpan animInterval;
+	root->GetAnimationInterval(animInterval);
+
+	int animStackCount = m_fbxscene->GetSrcObjectCount<FbxAnimStack>();
+	if (animStackCount > 0) {
+		FbxAnimStack * animStack = m_fbxscene->GetSrcObject<FbxAnimStack>(0);
+		if (animStack) {
+			FbxTakeInfo * anim_infos = m_fbxscene->GetTakeInfo(animStack->GetName());
+			FbxTime start = anim_infos->mLocalTimeSpan.GetStart();
+			FbxTime end = anim_infos->mLocalTimeSpan.GetStop();
+			FbxLongLong a_duration = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30);
+			ProcessSkeleton(root, nullptr, skeleton);
+		}
+	}
+
+	model->skeleton = skeleton;
+	model->interval = &animInterval;
+
 	ProcessNode(root, nullptr, model);
 
 	// Material -----------------------------------------------------
@@ -169,8 +190,114 @@ bool Engine::Renderer::LoadModelFBX(std::string model_path)
 	model->materials.push_back(mat);
 
 	return true;
+}
 
-	
+void Renderer::ProcessSkeleton(FbxNode * node, FbxNode * parent, skeleton_t * skeleton) {
+	for (int i = 0; i < node->GetNodeAttributeCount(); ++i) {
+		FbxNodeAttribute* attr = node->GetNodeAttribute();
+
+		FbxNodeAttribute::EType ty = attr->GetAttributeType();
+		if (ty == FbxNodeAttribute::EType::eSkeleton) {
+			bone_t bone;
+			bone.name = node->GetName();
+			bone.node = node;
+			skeleton->bones.push_back(bone);
+		}
+	}
+
+	for (int i = 0; i < node->GetChildCount(); ++i) {
+		ProcessSkeleton(node->GetChild(i), node, skeleton);
+	}
+}
+
+void Renderer::ProcessSkinning(FbxMesh * mesh, model_t * model) 
+{
+	int skinCount = mesh->GetDeformerCount(FbxDeformer::eSkin);
+	FbxSkin* skin;
+	auto skinIndex = 0;
+	int jointsCount = 0;
+	int boneCount = model->skeleton->bones.size();
+
+	if (skinCount)
+	{
+		model->hasAnim = true;
+		skin = (FbxSkin *)mesh->GetDeformer(skinIndex, FbxDeformer::eSkin);
+		jointsCount = skin->GetClusterCount();
+		model->bindPose.resize(boneCount);
+	}
+	else {
+		return;
+	}
+
+	FbxLongLong startFrame = model->interval->GetStart().GetFrameCount();
+	FbxLongLong stopFrame = model->interval->GetStop().GetFrameCount();
+	int keyframeCount = (stopFrame - startFrame + 1);
+
+	model->animations = new anim_t;
+	model->animations->keyframes.resize(stopFrame + 1);
+	for (int i = 0; i < model->animations->keyframes.size(); i++) {
+		model->animations->keyframes[i].joints.resize(jointsCount);
+	}
+
+	model->influences = std::vector<deformer_t>(mesh->GetControlPointsCount());
+
+	for (auto clusterIndex = 0; clusterIndex < jointsCount; clusterIndex++)
+	{
+		FbxCluster * cluster = skin->GetCluster(clusterIndex);
+
+		FbxNode * link = cluster->GetLink();
+		int jointIndex = 0;
+		for (; jointIndex < model->skeleton->bones.size(); jointIndex++) {
+			if (model->skeleton->bones[jointIndex].node == link)
+				break;
+		}
+
+		FbxAMatrix transformLinkMatrix;
+		cluster->GetTransformLinkMatrix(transformLinkMatrix);
+		transformLinkMatrix = transformLinkMatrix.Inverse();
+
+		glm::mat4 bindPoseJointMatrix;
+		for (auto i = 0; i < 4; ++i) {
+			FbxVector4 col = transformLinkMatrix.GetRow(i);
+			for (auto j = 0; j < 4; ++j) {
+				bindPoseJointMatrix[i][j] = (float)col.mData[j];
+			}
+		}
+		model->bindPose[jointIndex] = bindPoseJointMatrix;
+
+		int influenceCount = cluster->GetControlPointIndicesCount();
+		int * influenceIndices = cluster->GetControlPointIndices();
+		double * influenceWeights = cluster->GetControlPointWeights();
+
+		for (int influenceIndex = 0; influenceIndex < influenceCount; influenceIndex++)
+		{
+			int controlPointIndex = influenceIndices[influenceIndex];
+			model->influences[controlPointIndex].jointIndex.push_back(jointIndex);
+			model->influences[controlPointIndex].weights.push_back((float)influenceWeights[influenceIndex]);
+		}
+
+		FbxTime evalTime;
+		auto frameIndex = 0;
+		for (auto frame = startFrame; frame <= stopFrame; frame++, frameIndex++)
+		{
+			evalTime.SetFrame(frame);
+			auto& currentKey = model->animations->keyframes[frame];
+
+			FbxAMatrix jointTransform = cluster->GetLink()->EvaluateGlobalTransform(evalTime);
+
+			glm::mat4 transform;
+			for (auto i = 0; i < 4; ++i) {
+				FbxVector4 col = jointTransform.GetRow(i);
+				for (auto j = 0; j < 4; ++j) {
+					transform[i][j] = (float)col.mData[j];
+				}
+			}
+
+			currentKey.joints[jointIndex] = transform;
+		}
+	}
+
+	std::cout << "Anim parse done !" << std::endl;
 }
 
 void Renderer::ProcessNode(FbxNode * node, FbxNode * parent, model_t * model) 
@@ -182,6 +309,7 @@ void Renderer::ProcessNode(FbxNode * node, FbxNode * parent, model_t * model)
 
 		switch (type) {
 		case FbxNodeAttribute::eMesh:
+			Renderer::ProcessSkinning(node->GetMesh(), model);
 			Renderer::CompileForOpenGLFBX(node->GetMesh(), model);
 			
 			tinyobj::material_t mat;
@@ -394,6 +522,20 @@ void Engine::Renderer::CompileForOpenGLFBX(FbxMesh * mesh, model_t * model)
 				break;
 			}
 
+			if (model->hasAnim) {
+				deformer_t deformer = model->influences[id];
+
+				vertices->push_back((deformer.weights.size() > 1) ? deformer.weights[0] : 0.f);
+				vertices->push_back((deformer.weights.size() > 2) ? deformer.weights[1] : 0.f);
+				vertices->push_back((deformer.weights.size() > 3) ? deformer.weights[2] : 0.f);
+				vertices->push_back((deformer.weights.size() > 4) ? deformer.weights[3] : 0.f);
+
+				vertices->push_back((deformer.jointIndex.size() > 1) ? (float)deformer.jointIndex[0] : 0.f);
+				vertices->push_back((deformer.jointIndex.size() > 2) ? (float)deformer.jointIndex[1] : 0.f);
+				vertices->push_back((deformer.jointIndex.size() > 3) ? (float)deformer.jointIndex[2] : 0.f);
+				vertices->push_back((deformer.jointIndex.size() > 4) ? (float)deformer.jointIndex[3] : 0.f);
+			}
+
 			indexes->push_back(indexes->size());
 		}
 	}
@@ -512,18 +654,43 @@ void Renderer::draw()
 
 	if (m_model->vbo_ibo_index != -1) 
 	{
+		int v_size = (m_model->hasAnim) ? 16 : 8;
+
 		// Vertex position
 		glBindBuffer(GL_ARRAY_BUFFER, m_core->m_vbo[m_model->vbo_ibo_index]);
-		glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<const void *>(0 * sizeof(float)));
+		glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, v_size * sizeof(float), reinterpret_cast<const void *>(0 * sizeof(float)));
 		glEnableVertexAttribArray(position_location);
 
 		// Normal position
-		glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<const void *>(3 * sizeof(float)));
+		glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, v_size * sizeof(float), reinterpret_cast<const void *>(3 * sizeof(float)));
 		glEnableVertexAttribArray(normal_location);
 
 		// UV position
-		glVertexAttribPointer(texcoords_location, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<const void *>(6 * sizeof(float)));
+		glVertexAttribPointer(texcoords_location, 2, GL_FLOAT, GL_FALSE, v_size * sizeof(float), reinterpret_cast<const void *>(6 * sizeof(float)));
 		glEnableVertexAttribArray(texcoords_location);
+
+		// Animations
+		if (m_model->hasAnim) 
+		{
+			auto joint_weights = glGetAttribLocation(program, "a_JointWeights");
+			glVertexAttribPointer(joint_weights, 4, GL_FLOAT, GL_FALSE, v_size * sizeof(float), reinterpret_cast<const void *>(8 * sizeof(float)));
+			glEnableVertexAttribArray(joint_weights);
+
+			auto joint_indexes = glGetAttribLocation(program, "a_JointIndexes");
+			glVertexAttribPointer(joint_indexes, 4, GL_INT, GL_FALSE, v_size * sizeof(float), reinterpret_cast<const void *>(12 * sizeof(float)));
+			glEnableVertexAttribArray(joint_indexes);
+
+			auto bind_matrix = glGetUniformLocation(program, "u_bindposeMatrix");
+			glUniformMatrix4fv(bind_matrix, 68, GL_FALSE, glm::value_ptr(m_model->bindPose[0]));
+
+			auto joint_matrix = glGetUniformLocation(program, "u_jointMatrix");
+			glUniformMatrix4fv(joint_matrix, 68, GL_FALSE, glm::value_ptr(m_model->animations->keyframes[0].joints[0]));
+		}
+
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR) {
+			std::cerr << "OpenGL error: " << err << std::endl;
+		}
 
 		// Indexes
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_core->m_ibo[m_model->vbo_ibo_index]);
