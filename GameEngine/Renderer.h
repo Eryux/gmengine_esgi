@@ -96,6 +96,8 @@ namespace Engine {
 
 		bool m_isfbx = false;
 
+		int m_frame = 0;
+
 	public:
 		static int s_LAMBERT_SHADER;
 

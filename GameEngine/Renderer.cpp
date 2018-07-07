@@ -525,15 +525,25 @@ void Engine::Renderer::CompileForOpenGLFBX(FbxMesh * mesh, model_t * model)
 			if (model->hasAnim) {
 				deformer_t deformer = model->influences[id];
 
-				vertices->push_back((deformer.weights.size() > 1) ? deformer.weights[0] : 0.f);
-				vertices->push_back((deformer.weights.size() > 2) ? deformer.weights[1] : 0.f);
-				vertices->push_back((deformer.weights.size() > 3) ? deformer.weights[2] : 0.f);
-				vertices->push_back((deformer.weights.size() > 4) ? deformer.weights[3] : 0.f);
+				float p1 = (deformer.weights.size() > 0) ? deformer.weights[0] : 0.f;
+				float p2 = (deformer.weights.size() > 1) ? deformer.weights[1] : 0.f;
+				float p3 = (deformer.weights.size() > 2) ? deformer.weights[2] : 0.f;
+				float p4 = (deformer.weights.size() > 3) ? deformer.weights[3] : 0.f;
 
-				vertices->push_back((deformer.jointIndex.size() > 1) ? (float)deformer.jointIndex[0] : 0.f);
-				vertices->push_back((deformer.jointIndex.size() > 2) ? (float)deformer.jointIndex[1] : 0.f);
-				vertices->push_back((deformer.jointIndex.size() > 3) ? (float)deformer.jointIndex[2] : 0.f);
-				vertices->push_back((deformer.jointIndex.size() > 4) ? (float)deformer.jointIndex[3] : 0.f);
+				if ((p1 + p2 + p3 + p4) != 0) {
+					float sumsquare = p1 * p1 + p2 * p2 + p3 * p3 + p4 * p4;
+					p1 /= sumsquare; p2 /= sumsquare; p3 /= sumsquare; p4 /= sumsquare;
+				}
+
+				vertices->push_back(p1);
+				vertices->push_back(p2);
+				vertices->push_back(p3);
+				vertices->push_back(p4);
+
+				vertices->push_back((deformer.jointIndex.size() > 0) ? (float) (deformer.jointIndex[0]) : 0.f);
+				vertices->push_back((deformer.jointIndex.size() > 1) ? (float) (deformer.jointIndex[1]) : 0.f);
+				vertices->push_back((deformer.jointIndex.size() > 2) ? (float) (deformer.jointIndex[2]) : 0.f);
+				vertices->push_back((deformer.jointIndex.size() > 3) ? (float) (deformer.jointIndex[3]) : 0.f);
 			}
 
 			indexes->push_back(indexes->size());
@@ -677,14 +687,14 @@ void Renderer::draw()
 			glEnableVertexAttribArray(joint_weights);
 
 			auto joint_indexes = glGetAttribLocation(program, "a_JointIndexes");
-			glVertexAttribPointer(joint_indexes, 4, GL_INT, GL_FALSE, v_size * sizeof(float), reinterpret_cast<const void *>(12 * sizeof(float)));
+			glVertexAttribPointer(joint_indexes, 4, GL_FLOAT, GL_FALSE, v_size * sizeof(float), reinterpret_cast<const void *>(12 * sizeof(float)));
 			glEnableVertexAttribArray(joint_indexes);
 
 			auto bind_matrix = glGetUniformLocation(program, "u_bindposeMatrix");
 			glUniformMatrix4fv(bind_matrix, 68, GL_FALSE, glm::value_ptr(m_model->bindPose[0]));
 
 			auto joint_matrix = glGetUniformLocation(program, "u_jointMatrix");
-			glUniformMatrix4fv(joint_matrix, 68, GL_FALSE, glm::value_ptr(m_model->animations->keyframes[0].joints[0]));
+			glUniformMatrix4fv(joint_matrix, 68, GL_FALSE, glm::value_ptr(m_model->animations->keyframes[m_frame].joints[0]));
 		}
 
 		GLenum err;
@@ -705,6 +715,8 @@ void Renderer::draw()
 		if (m_material_id != -1 && m_texture_id != -1) {
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
+
+		m_frame = (m_frame >= 29) ? 0 : m_frame + 1;
 	}
 
 	glUseProgram(0);

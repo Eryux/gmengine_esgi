@@ -3,7 +3,7 @@ attribute vec4 a_Position;
 attribute vec3 a_Normal;
 attribute vec2 a_TexCoords;
 attribute vec4 a_JointWeights;
-attribute int a_JointIndexes[4];
+attribute vec4 a_JointIndexes;
 
 uniform mat4 u_WorldMatrix;
 uniform mat4 u_ProjectionMatrix;
@@ -20,11 +20,16 @@ void main(void)
 {
 	v_TexCoords = a_TexCoords;
 	v_Normal = vec3(u_WorldMatrix * vec4(a_Normal.xyz, 0.0));
-	v_Position = vec3(u_WorldMatrix * a_Position);
 
-	gl_Position = u_ProjectionMatrix * u_WorldMatrix * 
-		((a_JointWeights.x * u_jointMatrix[a_JointIndexes[0]] * u_bindposeMatrix[a_JointIndexes[0]] * a_Position)
-		+ (a_JointWeights.y * u_jointMatrix[a_JointIndexes[1]] * u_bindposeMatrix[a_JointIndexes[1]] * a_Position)
-		+ (a_JointWeights.z * u_jointMatrix[a_JointIndexes[2]] * u_bindposeMatrix[a_JointIndexes[2]] * a_Position)
-		+ (a_JointWeights.w * u_jointMatrix[a_JointIndexes[3]] * u_bindposeMatrix[a_JointIndexes[3]] * a_Position));
+	float sum_weight = a_JointWeights.x + a_JointWeights.y + a_JointWeights.z + a_JointWeights.w;
+
+	vec4 skin_position;
+		skin_position = (a_JointWeights.x * u_jointMatrix[int(a_JointIndexes.x)] * u_bindposeMatrix[int(a_JointIndexes.x)] * a_Position)
+			+ (a_JointWeights.y * u_jointMatrix[int(a_JointIndexes.y)] * u_bindposeMatrix[int(a_JointIndexes.y)] * a_Position)
+			+ (a_JointWeights.z * u_jointMatrix[int(a_JointIndexes.z)] * u_bindposeMatrix[int(a_JointIndexes.z)] * a_Position)
+			+ (a_JointWeights.w * u_jointMatrix[int(a_JointIndexes.w)] * u_bindposeMatrix[int(a_JointIndexes.w)] * a_Position);
+
+	v_Position = vec3(u_WorldMatrix * skin_position);
+
+	gl_Position = u_ProjectionMatrix * u_WorldMatrix * skin_position;
 }
